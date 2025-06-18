@@ -40,15 +40,15 @@ class ModeloReportCdr
                         $sql = "SELECT calleraccesse164, calleee164, callertogatewaye164, callergatewayid, starttime, callerip, holdtime, fee, endreason FROM $table WHERE";
 
                         if (!empty($caller)) {
-                            $sql .= " callertogatewaye164 = $caller AND";
+                            $sql .= ' callertogatewaye164 LIKE "%' . $caller . '" AND';
                         }
 
                          if (!empty($callerSolic)) {
-                            $sql .= " calleraccesse164 = $callerSolic AND";
+                            $sql .= ' calleraccesse164 LIKE "%' . $callerSolic . '" AND';
                         }
 
                         if (!empty($callee)) {
-                            $sql .= " calleee164 = $callee AND";
+                            $sql .= ' calleee164 LIKE "%' . $callee . '" AND';
                         }
 
                         $sql .= " $item = :$item ORDER BY id DESC LIMIT 500";
@@ -289,4 +289,3 @@ class ModeloReportCdr
 
     // }
 }
-

@@ -31,16 +31,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
         if ($table_date >= $fechaini && $table_date <= $fechafin) {
             $sql = "SELECT calleraccesse164,callertogatewaye164, calleee164, callergatewayid, callerip, starttime, holdtime, fee, endreason FROM $table WHERE";
 
-            if (!empty($caller)) $sql .= " callertogatewaye164 LIKE :callertogatewaye164 AND";
-            if (!empty($callee)) $sql .= " calleee164 LIKE :callee AND";
-            if (!empty($callerSolic)) $sql .= " calleraccesse164 LIKE :calleraccesse164 AND";
+            if (!empty($caller)) {
+                $sql .= ' callertogatewaye164 LIKE "%' . $caller . '" AND';
+            }
+
+                if (!empty($callerSolic)) {
+                $sql .= ' calleraccesse164 LIKE "%' . $callerSolic . '" AND';
+            }
+
+            if (!empty($callee)) {
+                $sql .= ' calleee164 LIKE "%' . $callee . '" AND';
+            }
             $sql .= " $item = :$item";
             $sql = rtrim($sql, " AND");
 
             $stmt = Conexion::conectar()->prepare($sql);
-            if (!empty($caller)) $stmt->bindParam(":callertogatewaye164", $caller);
-            if (!empty($callee)) $stmt->bindParam(":callee", $callee);
-            if (!empty($callerSolic)) $stmt->bindParam(":calleraccesse164", $callerSolic);
             $stmt->bindParam(":" . $item, $valor);
             $stmt->execute();
             $report[$table] = $stmt->fetchAll();
