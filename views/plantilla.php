@@ -1,12 +1,17 @@
 <?php 
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 
  if(isset($_SESSION["iniciarsession"]) && $_SESSION["iniciarsession"] == "ok"){
   require 'modulos/includes/exportardata.php';
  }
 
-
+ini_set('memory_limit', '10G');
+ini_set('max_execution_time', 0); // sin límite de tiempo
 
 ?>
 

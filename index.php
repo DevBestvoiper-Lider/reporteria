@@ -1,5 +1,8 @@
 <?php
 
+// Establecer la zona horaria al principio del script
+date_default_timezone_set('America/Bogota');
+
 require_once 'controllers/dashboard.controllers.php';
 require_once 'controllers/usuarios.controllers.php';
 require_once 'controllers/plantilla.controllers.php';

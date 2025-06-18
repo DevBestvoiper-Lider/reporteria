@@ -21,6 +21,7 @@ class ModeloReportCdr
                 // Recopila los datos del formulario
                 $caller = $_POST["caller"];
                 $callee = $_POST["callee"];
+                $callerSolic = $_POST["callerSolic"];
 
                 if (isset($_POST['fechainicio'])) {
                     $fechaini = str_replace("-", "", $_POST['fechainicio']);
@@ -40,6 +41,10 @@ class ModeloReportCdr
 
                         if (!empty($caller)) {
                             $sql .= " callertogatewaye164 = $caller AND";
+                        }
+
+                         if (!empty($callerSolic)) {
+                            $sql .= " calleraccesse164 = $callerSolic AND";
                         }
 
                         if (!empty($callee)) {
@@ -284,3 +289,4 @@ class ModeloReportCdr
 
     // }
 }
+

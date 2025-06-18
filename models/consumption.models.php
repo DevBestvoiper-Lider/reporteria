@@ -12,11 +12,9 @@ class ModeloConsumption {
             $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
         
              $report = array();
-	    
-	     $dateYear = date('Y');
 
-             $añoact = "20240101";
-             $añoact2 = $dateYear . "1231";
+             $añoact = date('Y')."0101";
+             $añoact2 = date('Y')."1231";
 
         
              foreach ($tables as $table) {

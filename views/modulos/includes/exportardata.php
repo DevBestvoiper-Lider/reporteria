@@ -1,165 +1,111 @@
 <?php
-
-$accountname = $_SESSION['customeraccountname'];
-
-$item = 'customeraccount';
-
-$valor = $accountname;
-
-
+ini_set('memory_limit', '-1');
+set_time_limit(0);
 ob_start();
 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['accion'])) {
-        if ($_POST['accion'] == 'exportar') {
+$accountname = $_SESSION['customeraccountname'];
+$item = 'customeraccount';
+$valor = $accountname;
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'exportar') {
 
-            $tabla = "e_cdr_%";
+    $tabla = "e_cdr_%";
+    $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE '$tabla'");
+    $stmt->execute();
+    $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-            $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE '$tabla'");
+    $caller = $_POST["caller"];
+    $callee = $_POST["callee"];
+    $callerSolic = $_POST["callerSolic"];
+    $fechaini = isset($_POST['fechainicio']) ? str_replace("-", "", $_POST['fechainicio']) : null;
+    $fechafin = isset($_POST['fechafin']) ? str_replace("-", "", $_POST['fechafin']) : null;
+
+    $report = [];
+
+    foreach ($tables as $table) {
+        $table_date = substr($table, -8);
+        if ($table_date >= $fechaini && $table_date <= $fechafin) {
+            $sql = "SELECT calleraccesse164,callertogatewaye164, calleee164, callergatewayid, callerip, starttime, holdtime, fee, endreason FROM $table WHERE";
+
+            if (!empty($caller)) $sql .= " callertogatewaye164 = :callertogatewaye164 AND";
+            if (!empty($callee)) $sql .= " calleee164 = :callee AND";
+            if (!empty($callerSolic)) $sql .= " calleraccesse164 = :calleraccesse164 AND";
+            $sql .= " $item = :$item";
+            $sql = rtrim($sql, " AND");
+
+            $stmt = Conexion::conectar()->prepare($sql);
+            if (!empty($caller)) $stmt->bindParam(":callertogatewaye164", $caller);
+            if (!empty($callee)) $stmt->bindParam(":callee", $callee);
+            if (!empty($callerSolic)) $stmt->bindParam(":calleraccesse164", $callerSolic);
+            $stmt->bindParam(":" . $item, $valor);
             $stmt->execute();
-
-            $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-            $report = array();
-
-            $caller = $_POST["caller"];
-            $callee = $_POST["callee"];
-
-            if (isset($_POST['fechainicio'])) {
-                $fechaini = str_replace("-", "", $_POST['fechainicio']);
-                $fechafin = str_replace("-", "", $_POST['fechafin']);
-            } else {
-                $fechaini = null;
-                $fechafin = null;
-            }
-
-            // Fetch records from database 
-            foreach ($tables as $table) {
-                //     // Extraer la fecha de la tabla (últimos 8 caracteres del nombre)
-                $table_date = substr($table, -8);
-
-                //     // Comprobar si la fecha está dentro del rango
-                if ($table_date >= "$fechaini" && $table_date <= "$fechafin") {
-                    $sql = "SELECT callere164, callertogatewaye164, calleee164, callergatewayid, callerip, starttime, holdtime, fee, endreason FROM $table WHERE";
-
-                    if (!empty($caller)) {
-                        $sql .= " callere164 = $caller AND";
-                    }
-
-                    if (!empty($callee)) {
-                        $sql .= " calleee164 = $callee AND";
-                    }
-
-                    $sql .= " $item = :$item";
-
-                    $sql = rtrim($sql, " AND");
-
-                    $stmt = Conexion::conectar()->prepare($sql);
-                    $stmt->bindParam(":" . $item, $valor, PDO::PARAM_STR);
-                    $stmt->execute();
-
-                    $report[$table] = $stmt->fetchAll();
-                }
-            }
-
-            $table2 = "e_end_reason";
-
-            $stmt = Conexion::conectar()->prepare("SELECT * FROM $table2");
-            $stmt->execute();
-
-            $endr = $stmt->fetchAll();
-
-            foreach ($report as $fecha => $registros) {
-                foreach ($registros as $registro) {
-
-                    foreach ($endr as $subarray2) {
-                        if (@$subarray2['code'] == $registro['endreason']) {
-                            @$endreason = $subarray2['description'];
-                        }
-                    }
-
-                    $dataArray[] = array(
-                        'callere164' => $registro['callere164'],
-                        'callertogatewaye164' => $registro['callertogatewaye164'],
-                        'calleee164' => $registro['calleee164'],
-                        'callergatewayid' => $registro['callergatewayid'],
-                        'endreason' => $endreason,
-                        'callerip' => $registro['callerip'],
-                        'starttime' => $registro['starttime'],
-                        'holdtime' => $registro['holdtime'],
-                        'fee' => $registro['fee'],
-                    );
-                }
-            }
-
-            // Encabezado para el archivo de texto
-            $archivo_txt = "NumeroMostrado;NumeroMarcado;ServidorOrigen;IpOrigen;HoraInicio;Duracion;motivodeterminacion;CostoLlamada;\n";
-
-            // Convertir y agregar datos al archivo de texto
-            foreach ($dataArray as $dato) {
-
-                $timestamp = $dato['starttime'] / 1000; // Convertir a segundos
-                $colombiaOffset = -7 * 3600; // Offset en segundos (5 horas atrás)
-
-                $timestampColombia = $timestamp;
-
-                $starttime = date("Y-m-d H:i:s", $timestampColombia);
-
-
-                $callerE164 = $dato['callertogatewaye164'];
-                $endreason2 = $dato['endreason'];
-                $calleeE164 = $dato['calleee164'];
-                $server = $dato['callergatewayid']; // Puedes cambiar esto según tus datos
-                $iporig = $dato['callerip']; // Puedes cambiar esto según tus datos
-                $holdtime = $dato['holdtime'];
-                $fee = $dato['fee'];
-
-                // Cambiar el separador decimal de punto a coma en el campo "CostoLlamada"
-                $feeFormatted = number_format($fee, 2, ',', ''); // Cambiar el punto por una coma como separador decimal
-
-                $linea = "$callerE164;$calleeE164;$server;$iporig;$starttime;$holdtime;$endreason2;$feeFormatted;\n";
-                $archivo_txt .= $linea;
-            }
-
-            $fileName = 'ReportCdr_' . date('Ymd') . '.txt';
-
-            // Crear un archivo de texto y escribir los datos comprimidos
-            file_put_contents($fileName, $archivo_txt);
-
-            // Crear un archivo ZIP y agregar el archivo de texto
-            $zip = new ZipArchive();
-            if ($zip->open('CdrReport.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
-                $zip->setArchiveComment(''); // Esto elimina cualquier comentario del archivo ZIP
-                $zip->addFile($fileName, $fileName);
-                $zip->close();
-            }
-
-            ob_clean();
-
-            // Descargar el archivo ZIP
-            header('Content-Type: application/zip');
-            header('Content-Disposition: attachment; filename="CdrReport.zip"');
-            readfile('CdrReport.zip');
-
-            // Eliminar los archivos temporales
-            unlink($fileName);
-            unlink('CdrReport.zip');
+            $report[$table] = $stmt->fetchAll();
         }
     }
+
+    $endr = Conexion::conectar()->query("SELECT * FROM e_end_reason")->fetchAll();
+    $archivo_txt = "NumeroSolicitado,NumeroMostrado;NumeroMarcado;ServidorOrigen;IpOrigen;HoraInicio;Duracion;motivodeterminacion;CostoLlamada;\n";
+    $dataArray = [];
+
+    foreach ($report as $registros) {
+        foreach ($registros as $registro) {
+            $endreason = '';
+            foreach ($endr as $subarray2) {
+                if ($subarray2['code'] == $registro['endreason']) {
+                    $endreason = $subarray2['description'];
+                    break;
+                }
+            }
+
+            $timestampColombia = $registro['starttime'] / 1000;
+            $starttime = date("Y-m-d H:i:s", $timestampColombia);
+            $feeFormatted = number_format($registro['fee'], 2, ',', '');
+
+            $linea = "{$registro['calleraccesse164']};{$registro['callertogatewaye164']};{$registro['calleee164']};{$registro['callergatewayid']};{$registro['callerip']};{$starttime};{$registro['holdtime']};{$endreason};{$feeFormatted};\n";
+            $archivo_txt .= $linea;
+        }
+    }
+
+    $fileName = 'ReportCdr_' . date('Ymd_His') . '.txt';
+    $filePath = '/filetmp/' . $fileName;
+    $fileZip = '/filetmp/CdrReport_' . date('Ymd_His') . '.zip';
+
+    if (file_put_contents($filePath, $archivo_txt) === false) {
+        http_response_code(500);
+        die("Error al guardar archivo TXT.");
+    }
+
+    $zip = new ZipArchive();
+    if ($zip->open($fileZip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+        http_response_code(500);
+        die("Error al crear el archivo ZIP.");
+    }
+    $zip->addFile($filePath, $fileName);
+    $zip->close();
+    unlink($filePath); // Eliminar TXT temporal
+
+    //   Respuesta final con X-Sendfile
+    if (!file_exists($fileZip)) {
+        http_response_code(500);
+        die("ERROR: ZIP no encontrado.");
+    }
+
+    ob_end_clean();
+    header('Content-Type: application/zip');
+    header('Content-Disposition: attachment; filename="CdrReport.zip"');
+    header('X-Sendfile: ' . realpath($fileZip));
+    exit;
 }
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['accion'])) {
         if ($_POST['accion'] == 'exportarPagos') {
 
-            $tabla = "e_payhistory_" . date('Y') . "%";
-
-            $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE '$tabla'");
-            $stmt->execute();
-
-            $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
+            $dataArray = []; // Inicializar $dataArray
             $report = array();
 
             if (isset($_POST['fechainicio'])) {
@@ -169,6 +115,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $fechaini = null;
                 $fechafin = null;
             }
+
+            // Definición de $tables que faltaba
+            $tabla = "e_payhistory_" . date('Y') . "%";
+            $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE :tabla");
+            $stmt->bindParam(":tabla", $tabla, PDO::PARAM_STR);
+            $stmt->execute();
+            $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
             // Fetch records from database 
             foreach ($tables as $table) {
@@ -230,41 +183,70 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             $fileName2 = 'HistoricoPagos_' . date('Ymd') . '.txt';
+            $zipFileName2 = 'PagosHistory.zip';
 
             // Crear un archivo de texto y escribir los datos comprimidos
-            file_put_contents($fileName2, $archivo_txt2);
-
-            // Crear un archivo ZIP y agregar el archivo de texto
-            $zip3 = new ZipArchive();
-            if ($zip3->open('PagosHistory.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
-                $zip3->setArchiveComment(''); // Esto elimina cualquier comentario del archivo ZIP
-                $zip3->addFile($fileName2, $fileName2);
-                $zip3->close();
+            if (file_put_contents($fileName2, $archivo_txt2) === false) {
+                ob_end_clean();
+                error_log("Error: No se pudo escribir el archivo TXT: " . $fileName2);
+                echo "Error: No se pudo generar el archivo de reporte de pagos. Contacte a soporte.";
+                exit;
             }
 
+            // Crear un archivo ZIP y agregar el archivo de texto
+            $zipPay = new ZipArchive(); 
+            if ($zipPay->open($zipFileName2, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
+                ob_end_clean();
+                error_log("Error: No se pudo abrir/crear el archivo ZIP de pagos: " . $zipFileName2);
+                echo "Error: No se pudo crear el archivo ZIP de pagos. Contacte a soporte (open).";
+                unlink($fileName2);
+                exit;
+            }
+            
+            if (!$zipPay->addFile($fileName2, $fileName2)) {
+                ob_end_clean();
+                error_log("Error: No se pudo agregar el archivo TXT de pagos al ZIP: " . $fileName2);
+                echo "Error: No se pudo crear el archivo ZIP de pagos. Contacte a soporte (addFile).";
+                $zipPay->close();
+                unlink($fileName2);
+                unlink($zipFileName2);
+                exit;
+            }
+            
+            if (!$zipPay->close()) {
+                ob_end_clean();
+                error_log("Error: No se pudo cerrar/finalizar el archivo ZIP de pagos: " . $zipFileName2);
+                echo "Error: No se pudo crear el archivo ZIP de pagos. Contacte a soporte (close).";
+                unlink($fileName2);
+                unlink($zipFileName2);
+                exit;
+            }
 
-            ob_clean();
+            ob_end_clean();
 
             // Descargar el archivo ZIP
             header('Content-Type: application/zip');
-            header('Content-Disposition: attachment; filename="PagosHistory.zip"');
-            readfile('PagosHistory.zip');
+            header('Content-Disposition: attachment; filename="' . $zipFileName2 . '"');
+            header('Content-Length: ' . filesize($zipFileName2));
+            readfile($zipFileName2);
 
             // // Eliminar los archivos temporales
             unlink($fileName2);
-            unlink('PagosHistory.zip');
+            unlink($zipFileName2);
+            exit;
         }
     }
 }
 if (isset($_POST['exportarMonth'])) {
+    $dataArray = []; // Inicializar $dataArray
+    $report = array();
+
     $tabla = "e_reportgatewaymappingfee_" . date('Y') . "%";
 
     $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE '$tabla'");
     $stmt->execute();
 
     $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-    $report = array();
 
     if (isset($_POST['fechainicio'])) {
         $fechaini = str_replace("-", "", $_POST['fechainicio']);
@@ -354,32 +336,64 @@ if (isset($_POST['exportarMonth'])) {
     }
 
 
-    $fileName2 = 'Consumo_' . date('Ymd') . '.txt';
+    $fileNameMonth = 'ConsumoMes_' . date('Ymd') . '.txt';
+    $zipFileNameMonth = 'ConsumoMes.zip';
 
     // Crear un archivo de texto y escribir los datos comprimidos
-    file_put_contents($fileName2, $archivo_txt3);
-
+    if (file_put_contents($fileNameMonth, $archivo_txt3) === false) {
+        ob_end_clean();
+        error_log("Error: No se pudo escribir el archivo TXT de consumo mensual: " . $fileNameMonth);
+        echo "Error: No se pudo generar el archivo de consumo mensual. Contacte a soporte.";
+        exit;
+    }
+    
     // Crear un archivo ZIP y agregar el archivo de texto
-    $zip3 = new ZipArchive();
-    if ($zip3->open('Consumo.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
-        $zip3->setArchiveComment(''); // Esto elimina cualquier comentario del archivo ZIP
-        $zip3->addFile($fileName2, $fileName2);
-        $zip3->close();
+    $zipMonth = new ZipArchive();
+    if ($zipMonth->open($zipFileNameMonth, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
+        ob_end_clean();
+        error_log("Error: No se pudo abrir/crear el archivo ZIP de consumo mensual: " . $zipFileNameMonth);
+        echo "Error: No se pudo crear el archivo ZIP de consumo mensual. Contacte a soporte (open).";
+        unlink($fileNameMonth);
+        exit;
     }
 
-    ob_clean();
+    if (!$zipMonth->addFile($fileNameMonth, $fileNameMonth)) {
+        ob_end_clean();
+        error_log("Error: No se pudo agregar el archivo TXT de consumo mensual al ZIP: " . $fileNameMonth);
+        echo "Error: No se pudo crear el archivo ZIP de consumo mensual. Contacte a soporte (addFile).";
+        $zipMonth->close();
+        unlink($fileNameMonth);
+        unlink($zipFileNameMonth);
+        exit;
+    }
+    
+    if (!$zipMonth->close()) {
+        ob_end_clean();
+        error_log("Error: No se pudo cerrar/finalizar el archivo ZIP de consumo mensual: " . $zipFileNameMonth);
+        echo "Error: No se pudo crear el archivo ZIP de consumo mensual. Contacte a soporte (close).";
+        unlink($fileNameMonth);
+        unlink($zipFileNameMonth);
+        exit;
+    }
+
+    ob_end_clean();
 
     // Descargar el archivo ZIP
     header('Content-Type: application/zip');
-    header('Content-Disposition: attachment; filename="Consumo.zip"');
-    readfile('Consumo.zip');
+    header('Content-Disposition: attachment; filename="' . $zipFileNameMonth . '"');
+    header('Content-Length: ' . filesize($zipFileNameMonth));
+    readfile($zipFileNameMonth);
 
     // Eliminar los archivos temporales
-    unlink($fileName2);
-    unlink('Consumo.zip');
+    unlink($fileNameMonth);
+    unlink($zipFileNameMonth);
+    exit;
 }
 
 if (isset($_POST['exportarDay'])) {
+    $dataArray = []; // Inicializar $dataArray
+    $report = array();
+
     $tabla = "e_reportgatewaymappingfee_" . date('Y') . "%";
 
     $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE '$tabla'");
@@ -488,27 +502,57 @@ if (isset($_POST['exportarDay'])) {
 
 
 
-    $fileName2 = 'Consumo_' . date('Ymd') . '.txt';
+    $fileNameDay = 'ConsumoDia_' . date('Ymd') . '.txt';
+    $zipFileNameDay = 'ConsumoDia.zip';
 
     // Crear un archivo de texto y escribir los datos comprimidos
-    file_put_contents($fileName2, $archivo_txt4);
-
-    // Crear un archivo ZIP y agregar el archivo de texto
-    $zip3 = new ZipArchive();
-    if ($zip3->open('Consumo.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
-        $zip3->setArchiveComment(''); // Esto elimina cualquier comentario del archivo ZIP
-        $zip3->addFile($fileName2, $fileName2);
-        $zip3->close();
+    if (file_put_contents($fileNameDay, $archivo_txt4) === false) {
+        ob_end_clean();
+        error_log("Error: No se pudo escribir el archivo TXT de consumo diario: " . $fileNameDay);
+        echo "Error: No se pudo generar el archivo de consumo diario. Contacte a soporte.";
+        exit;
     }
 
-    ob_clean();
+    // Crear un archivo ZIP y agregar el archivo de texto
+    $zipDay = new ZipArchive();
+    if ($zipDay->open($zipFileNameDay, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
+        ob_end_clean();
+        error_log("Error: No se pudo abrir/crear el archivo ZIP de consumo diario: " . $zipFileNameDay);
+        echo "Error: No se pudo crear el archivo ZIP de consumo diario. Contacte a soporte (open).";
+        unlink($fileNameDay);
+        exit;
+    }
+
+    if (!$zipDay->addFile($fileNameDay, $fileNameDay)) {
+        ob_end_clean();
+        error_log("Error: No se pudo agregar el archivo TXT de consumo diario al ZIP: " . $fileNameDay);
+        echo "Error: No se pudo crear el archivo ZIP de consumo diario. Contacte a soporte (addFile).";
+        $zipDay->close();
+        unlink($fileNameDay);
+        unlink($zipFileNameDay);
+        exit;
+    }
+    
+    if (!$zipDay->close()) {
+        ob_end_clean();
+        error_log("Error: No se pudo cerrar/finalizar el archivo ZIP de consumo diario: " . $zipFileNameDay);
+        echo "Error: No se pudo crear el archivo ZIP de consumo diario. Contacte a soporte (close).";
+        unlink($fileNameDay);
+        unlink($zipFileNameDay);
+        exit;
+    }
+    
+    ob_end_clean();
 
     // Descargar el archivo ZIP
     header('Content-Type: application/zip');
-    header('Content-Disposition: attachment; filename="Consumo.zip"');
-    readfile('Consumo.zip');
+    header('Content-Disposition: attachment; filename="' . $zipFileNameDay . '"');
+    header('Content-Length: ' . filesize($zipFileNameDay));
+    readfile($zipFileNameDay);
 
     // Eliminar los archivos temporales
-    unlink($fileName2);
-    unlink('Consumo.zip');
+    unlink($fileNameDay);
+    unlink($zipFileNameDay);
+    exit;
 }
+

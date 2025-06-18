@@ -52,6 +52,12 @@ include_once 'functions/reportcdr.functions.php';
                                                                                 echo $_POST['callee'];
                                                                             } ?>" class="form-control" id="inputEmail5">
                                 </div>
+                                <div class="col-md-6">
+                                    <label for="inputEmail5" class="form-label">Numero Solicitado</label>
+                                    <input type="text" name="callerSolic" value="<?php if (isset($_POST['callerSolic'])) {
+                                                                                echo $_POST['callerSolic'];
+                                                                            } ?>" class="form-control" id="inputEmail5">
+                                </div>
                                 <div class="text-center">
                                     <button type="submit" class="btn btn-primary">Buscar</button>
                                     <button type="bottom" class="btn btn-secondary" name="accion" value="exportar">Exportar</button>

@@ -19,14 +19,8 @@ class ControllersConsumption{
     }
 
     static public function ctrMostrarConsumoXMes($item, $valor){
-
-
-        $fechaInicio = $_POST['FechaInicio']; // Ejemplo: "2024-12-01"
-        $datetime = new DateTime($fechaInicio);
-        $anio = $datetime->format('Y');
-        echo $anio;
         
-        $tabla = "e_reportgatewaymappingfee_". $anio ."%";
+        $tabla = "e_reportgatewaymappingfee_". date('Y') ."%";
 
         $respuesta = ModeloConsumption::MdlMostrarConsumoCdrMes( $tabla, $item, $valor);
 
