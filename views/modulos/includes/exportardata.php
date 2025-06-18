@@ -31,9 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
         if ($table_date >= $fechaini && $table_date <= $fechafin) {
             $sql = "SELECT calleraccesse164,callertogatewaye164, calleee164, callergatewayid, callerip, starttime, holdtime, fee, endreason FROM $table WHERE";
 
-            if (!empty($caller)) $sql .= " callertogatewaye164 = :callertogatewaye164 AND";
-            if (!empty($callee)) $sql .= " calleee164 = :callee AND";
-            if (!empty($callerSolic)) $sql .= " calleraccesse164 = :calleraccesse164 AND";
+            if (!empty($caller)) $sql .= " callertogatewaye164 LIKE :callertogatewaye164 AND";
+            if (!empty($callee)) $sql .= " calleee164 LIKE :callee AND";
+            if (!empty($callerSolic)) $sql .= " calleraccesse164 LIKE :calleraccesse164 AND";
             $sql .= " $item = :$item";
             $sql = rtrim($sql, " AND");
 

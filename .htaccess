@@ -2,3 +2,11 @@ Options ALL -Indexes
 
 RewriteEngine On
 RewriteRule ^([-a-zA-Z0-9]+)$ index.php?ruta=$1
+
+SetEnv APP_ENV "Development"
+
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept"
+</IfModule>

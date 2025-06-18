@@ -69,7 +69,7 @@
                     
                      // Comprobar si la fecha está dentro del rango
                      if ($table_date >= '2022'. $mesact .'01' && $table_date <= $year. $mesact .'31') {
-                         $stmt = Conexion::conectar()->prepare("SELECT date, fee FROM $table WHERE $item = :$item");
+                         $stmt = Conexion::conectar()->prepare("SELECT date, fee FROM $table WHERE $item = :$item LIMIT 100");
                          $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
                          $stmt -> execute();
 
@@ -128,7 +128,7 @@
                     
                      // Comprobar si la fecha está dentro del rango
                      if ($table_date >= '2022'. $mesant .'01' && $table_date <= $year. $mesant .'31') {
-                         $stmt = Conexion::conectar()->prepare("SELECT date, fee FROM $table WHERE $item = :$item");
+                         $stmt = Conexion::conectar()->prepare("SELECT date, fee FROM $table WHERE $item = :$item LIMIT 100");
                          $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
                          $stmt -> execute();
 
@@ -189,7 +189,7 @@
                     
                      // Comprobar si la fecha está dentro del rango
                      if ($table_date >= $anoact .'0101' && $table_date <= $anoact . '1231') {
-                         $stmt = Conexion::conectar()->prepare("SELECT date, fee FROM $table WHERE $item = :$item");
+                         $stmt = Conexion::conectar()->prepare("SELECT date, fee FROM $table WHERE $item = :$item LIMIT 100");
                          $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
                          $stmt -> execute();
 
@@ -246,7 +246,7 @@
                     
                      // Comprobar si la fecha está dentro del rango
                      if ($table_date >= $anoant .'0101' && $table_date <= $anoant . '1231') {
-                         $stmt = Conexion::conectar()->prepare("SELECT date, fee FROM $table WHERE $item = :$item");
+                         $stmt = Conexion::conectar()->prepare("SELECT date, fee FROM $table WHERE $item = :$item LIMIT 100");
                          $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
                          $stmt -> execute();
 
@@ -306,7 +306,7 @@
                     
                      // Comprobar si la fecha está dentro del rango
                      if ($table_date >= $year.$hoy && $table_date <= $year.$hoy) {
-                         $stmt = Conexion::conectar()->prepare("SELECT callergatewayid, callerip, holdtime, fee, callerareacode FROM $table WHERE $item = :$item");
+                         $stmt = Conexion::conectar()->prepare("SELECT callergatewayid, callerip, holdtime, fee, callerareacode FROM $table WHERE $item = :$item LIMIT 100");
                          $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
                          $stmt -> execute();
 
