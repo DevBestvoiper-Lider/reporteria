@@ -300,6 +300,9 @@ static public function ctrActualizarPassword(){
             ############ VALIDAR IMAGEN ############
             $tabla = "e_usuariosclientes";
 
+            echo $_POST["CambiarPassword"];
+            echo $_POST["contraseña1"];
+
             if ($_POST["CambiarPassword"] == $_POST["contraseña1"]){
 
                 if (isset($_POST["CambiarPassword"])){

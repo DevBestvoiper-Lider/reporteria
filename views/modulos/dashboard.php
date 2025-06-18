@@ -169,7 +169,7 @@
                                 <div class="card-body" id="llamadasrea">
                                     <h5 class="card-title">Consumo por Servidor <span>| Hoy</span></h5>
 
-                                    <table class="table table-borderless datatable">
+                                    <table id="tableDashboard" class="table table-borderless datatable">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Ip Servidor</th>

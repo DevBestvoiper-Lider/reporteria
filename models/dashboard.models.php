@@ -57,6 +57,8 @@
 
                  $report = array();
 
+                 $year = date('Y');
+
                  // $mesact = date('m');
 
                  $mesact = date('m');
@@ -66,7 +68,7 @@
                     $table_date = substr($table, -8);
                     
                      // Comprobar si la fecha está dentro del rango
-                     if ($table_date >= '2023'. $mesact .'01' && $table_date <= '2023'. $mesact .'31') {
+                     if ($table_date >= '2022'. $mesact .'01' && $table_date <= $year. $mesact .'31') {
                          $stmt = Conexion::conectar()->prepare("SELECT date, fee FROM $table WHERE $item = :$item");
                          $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
                          $stmt -> execute();
@@ -88,7 +90,7 @@
                     $table_date = substr($table, -8);
                     
                     // Comprobar si la fecha está dentro del rango
-                    if ($table_date >= '20230301' && $table_date <= '20230831') {
+                    if ($table_date >= '20220101' && $table_date <= '20230831') {
                         $sql = "SELECT date, fee FROM $table";
                         $stmt = $conn->prepare($sql);
                         $stmt->execute();
@@ -115,6 +117,8 @@
 
                  $report = array();
 
+                 $year = date('Y');
+
                  $restmes = (date('m') - 1);
                  $mesant = sprintf("%02d", $restmes);
 
@@ -123,7 +127,7 @@
                     $table_date = substr($table, -8);
                     
                      // Comprobar si la fecha está dentro del rango
-                     if ($table_date >= '2023'. $mesant .'01' && $table_date <= '2023'. $mesant .'31') {
+                     if ($table_date >= '2022'. $mesant .'01' && $table_date <= $year. $mesant .'31') {
                          $stmt = Conexion::conectar()->prepare("SELECT date, fee FROM $table WHERE $item = :$item");
                          $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
                          $stmt -> execute();
@@ -140,12 +144,14 @@
 
                 $report = array();
 
+                $year = date('Y');
+
                 foreach ($tables as $table) {
                     // Extraer la fecha de la tabla (últimos 8 caracteres del nombre)
                     $table_date = substr($table, -8);
                     
                     // Comprobar si la fecha está dentro del rango
-                    if ($table_date >= '2023'. $mesant .'01' && $table_date <= '2023'. $mesant .'31') {
+                    if ($table_date >= '2022'. $mesant .'01' && $table_date <= $year. $mesant .'31') {
                         $sql = "SELECT date, fee FROM $table";
                         $stmt = $conn->prepare($sql);
                         $stmt->execute();
@@ -290,6 +296,8 @@
 
                  $report = array();
 
+                 $year = date('Y');
+
                  $hoy = date('md');
 
                  foreach ($tables as $table) {
@@ -297,7 +305,7 @@
                     $table_date = substr($table, -8);
                     
                      // Comprobar si la fecha está dentro del rango
-                     if ($table_date >= '2023'.$hoy && $table_date <= '2023'.$hoy) {
+                     if ($table_date >= $year.$hoy && $table_date <= $year.$hoy) {
                          $stmt = Conexion::conectar()->prepare("SELECT callergatewayid, callerip, holdtime, fee, callerareacode FROM $table WHERE $item = :$item");
                          $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
                          $stmt -> execute();

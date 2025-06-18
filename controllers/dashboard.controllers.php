@@ -26,20 +26,24 @@ class ControllersDashboard{
             $dia = $mes.'30';
         }
 
+        $ano = date('Y');
+
         $diaformat = date('m') . $dia;
 
         $ayer = $diaformat;
         
-        $tabla = "e_reportcustomerfee_2023".$ayer;
+        $tabla = "e_reportcustomerfee_". $ano .$ayer;
 
         $respuesta = ModeloDashboard::MdlMostrarDatosAyer( $tabla, $item, $valor);
     }
 
     static public function ctrMostrarDatosMes($item, $valor){
 
+        $ano = date('Y');
+
         $mes = date('m');
         
-        $tabla = "e_reportcustomerfee_2023".$mes."%";
+        $tabla = "e_reportcustomerfee_". $ano .$mes."%";
 
         $respuesta = ModeloDashboard::MdlMostrarDatosMes( $tabla, $item, $valor);
 
@@ -48,10 +52,12 @@ class ControllersDashboard{
 
     static public function ctrMostrarDatosMesAnt($item, $valor){
 
+        $ano = date('Y');
+
         $restmes = (date('m') - 1);
         $mes = sprintf("%02d", $restmes);
 
-        $tabla = "e_reportcustomerfee_2023".$mes."%";
+        $tabla = "e_reportcustomerfee_".$ano.$mes."%";
 
         $respuesta = ModeloDashboard::MdlMostrarDatosMesAnt( $tabla, $item, $valor);
 
@@ -85,19 +91,14 @@ class ControllersDashboard{
 
         $dia01 = date('Ym').'01';
 
+        $dia01 = date('Ym').'03';
+
         if (date('Ymd') != $dia01) {
             $dia = sprintf("%02d", (date('d')));
-        } else {
-            $restmes = (date('m') - 1);
-            $mes = sprintf("%02d", $restmes);
-            $dia = $mes.'30';
         }
-
         $diaformat = date('m') . $dia;
-
-    //    echo $diaformat;
         
-        $tabla = "e_cdr_2023".$diaformat;
+        $tabla = "e_cdr_" . date('Y') .$diaformat;
 
          $respuesta = ModeloDashboard::MdlMostrarLlamadasCdrMes( $tabla, $item, $valor);
 

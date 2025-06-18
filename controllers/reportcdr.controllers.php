@@ -6,7 +6,7 @@ class ControllersReportCdr{
 
     static public function ctrMostrarDatosCdrMes($item, $valor){
 
-        $tabla = "e_cdr_2023%";
+        $tabla = "e_cdr_%";
 
         $respuesta = ModeloReportCdr::MdlMostrarDatosCdrMes( $tabla, $item, $valor);
 

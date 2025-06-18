@@ -18,18 +18,27 @@ $reportcdr2 = ControllersReportCdr::ctrMostrarEndReason($item, $valor);
 
 $tuArray = $reportcdr;
 
-if(isset($tuArray)){
+if (isset($tuArray)) {
     foreach ($tuArray as $fecha => $registros) {
         foreach ($registros as $registro) {
 
-            foreach($reportcdr2 as $subarray2){
-                if(@$subarray2['code'] == $registro['endreason']){
-                    @$endreason = $subarray2['description'];
+            foreach ($reportcdr2 as $subarray2) {
+                if (@$subarray2['code'] == $registro['endreason']) {
+
+
+                    if ($subarray2['description'] == "Caller Hangup") {
+                        @$endreason = "Empresa";
+                    } else if ($subarray2['description'] == "Callee Hangup") {
+                        @$endreason = "Cliente";
+                    } else {
+                        @$endreason = $subarray2['description'];
+                    }
                 }
             }
 
             $dataArray[] = array(
-                'callere164' => $registro['callere164'],
+                'calleraccesse164' => $registro['calleraccesse164'],
+                'callertogatewaye164' => $registro['callertogatewaye164'],
                 'endreason' => @$endreason,
                 'calleee164' => $registro['calleee164'],
                 'callergatewayid' => $registro['callergatewayid'],
@@ -40,5 +49,3 @@ if(isset($tuArray)){
         }
     }
 }
-
-?>
