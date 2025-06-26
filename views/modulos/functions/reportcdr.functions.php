@@ -40,10 +40,12 @@ if (isset($tuArray)) {
             $valor = $registro['callerareacode'];
             $AreaCode = ControllersReportCdr::ctrMostrarAreaCode($item, $valor);
 
+            $areacodeLocation = (is_array($AreaCode) && isset($AreaCode['location'])) ? $AreaCode['location'] : 'N/A';
+
             $dataArray[] = array(
                 'calleraccesse164' => $registro['calleraccesse164'],
                 'callertogatewaye164' => $registro['callertogatewaye164'],
-                'areacode' => $AreaCode['location'] ?? 'N/A',
+                'areacode' => $areacodeLocation,
                 'endreason' => @$endreason,
                 'calleee164' => $registro['calleee164'],
                 'callergatewayid' => $registro['callergatewayid'],
