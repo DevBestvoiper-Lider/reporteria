@@ -37,7 +37,7 @@ class ModeloReportCdr
 
                     //     // Comprobar si la fecha está dentro del rango
                     if ($table_date >= "$fechaini" && $table_date <= "$fechafin") {
-                        $sql = "SELECT calleraccesse164, calleee164, callertogatewaye164, callergatewayid, starttime, callerip, holdtime, fee, endreason FROM $table WHERE";
+                        $sql = "SELECT calleraccesse164, calleee164, callertogatewaye164, callergatewayid, starttime, callerareacode, callerip, holdtime, fee, endreason FROM $table WHERE";
 
                         if (!empty($caller)) {
                             $sql .= ' callertogatewaye164 LIKE "%' . $caller . '" AND';
@@ -113,6 +113,27 @@ class ModeloReportCdr
         $stmt = null;
     }
 
+    static public function MdlMostrarAreaName($tabla, $item, $valor)
+    {
+        if ($item != null) {
+
+            $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :$item");
+            $stmt->bindParam(":" . $item, $valor, PDO::PARAM_STR);
+            $stmt->execute();
+
+            return $stmt->fetch();
+        } else {
+            $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla");
+            $stmt->execute();
+
+            return $stmt->fetchAll();
+        }
+
+        $stmt->close();
+
+        $stmt = null;
+    }
+
 
     // static public function MdlMostrarDatosMesAnt($tabla, $item, $valor){
 
@@ -120,7 +141,7 @@ class ModeloReportCdr
 
     //         $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE '$tabla'");
     //         $stmt -> execute();
-
+ 
     //         $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     //          $report = array();

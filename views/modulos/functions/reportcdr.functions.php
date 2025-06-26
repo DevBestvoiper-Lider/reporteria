@@ -18,6 +18,12 @@ $reportcdr2 = ControllersReportCdr::ctrMostrarEndReason($item, $valor);
 
 $tuArray = $reportcdr;
 
+$item = null;
+
+$valor = null;
+
+$AreaCode = ControllersReportCdr::ctrMostrarAreaCode($item, $valor);
+
 if (isset($tuArray)) {
     foreach ($tuArray as $fecha => $registros) {
         foreach ($registros as $registro) {
@@ -36,9 +42,16 @@ if (isset($tuArray)) {
                 }
             }
 
+            foreach ($AreaCode as $subarray3) {
+                if (@$subarray3['areacode'] == $registro['callerareacode']) {
+                    @$registro['callerareaname'] = $subarray3['location'];
+                }
+            }
+
             $dataArray[] = array(
                 'calleraccesse164' => $registro['calleraccesse164'],
                 'callertogatewaye164' => $registro['callertogatewaye164'],
+                'areacode' => $registro['callerareaname'],
                 'endreason' => @$endreason,
                 'calleee164' => $registro['calleee164'],
                 'callergatewayid' => $registro['callergatewayid'],

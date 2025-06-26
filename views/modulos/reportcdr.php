@@ -77,6 +77,7 @@ include_once 'functions/reportcdr.functions.php';
                                         <th>Numero solicitado</th>
                                         <th>Numero Mostrado</th>
                                         <th>Numero Marcado</th>
+                                        <th>Destino Marcado</th>
                                         <th>Servidor Origen</th>
                                         <th>Hora Inicio</th>
                                         <th>Duracion (seg)</th>
@@ -114,6 +115,7 @@ include_once 'functions/reportcdr.functions.php';
                                             <td>' . $data['calleraccesse164'] . '</td>
                                             <td>' . $data['callertogatewaye164'] . '</td>
                                             <td>' . $data['calleee164'] . '</td>
+                                            <td>' . $data['areacode'] . '</td>
                                             <td>' . $data['callergatewayid'] . '</td>
                                             <td>' . $starttime . '</td>
                                             <td>' . $data['holdtime'] . '</td>

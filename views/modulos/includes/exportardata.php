@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
     foreach ($tables as $table) {
         $table_date = substr($table, -8);
         if ($table_date >= $fechaini && $table_date <= $fechafin) {
-            $sql = "SELECT calleraccesse164,callertogatewaye164, calleee164, callergatewayid, callerip, starttime, holdtime, fee, endreason FROM $table WHERE";
+            $sql = "SELECT calleraccesse164,callertogatewaye164, calleee164, callerareacode, callergatewayid, callerip, starttime, holdtime, fee, endreason FROM $table WHERE";
 
             if (!empty($caller)) {
                 $sql .= ' callertogatewaye164 LIKE "%' . $caller . '" AND';
@@ -52,37 +52,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
         }
     }
 
-    $endr = Conexion::conectar()->query("SELECT * FROM e_end_reason")->fetchAll();
-    $archivo_txt = "NumeroSolicitado,NumeroMostrado;NumeroMarcado;ServidorOrigen;IpOrigen;HoraInicio;Duracion;motivodeterminacion;CostoLlamada;\n";
-    $dataArray = [];
+    $endr = Conexion::conectar()->query("SELECT * FROM e_end_reason")->fetchAll(PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
 
-    foreach ($report as $registros) {
-        foreach ($registros as $registro) {
-            $endreason = '';
-            foreach ($endr as $subarray2) {
-                if ($subarray2['code'] == $registro['endreason']) {
-                    $endreason = $subarray2['description'];
-                    break;
-                }
-            }
-
-            $timestampColombia = $registro['starttime'] / 1000;
-            $starttime = date("Y-m-d H:i:s", $timestampColombia);
-            $feeFormatted = number_format($registro['fee'], 2, ',', '');
-
-            $linea = "{$registro['calleraccesse164']};{$registro['callertogatewaye164']};{$registro['calleee164']};{$registro['callergatewayid']};{$registro['callerip']};{$starttime};{$registro['holdtime']};{$endreason};{$feeFormatted};\n";
-            $archivo_txt .= $linea;
-        }
+    // Función para obtener location por areacode con caché local
+    function getAreaCodeLocation($areacode) {
+        static $cache = [];
+        if (!$areacode) return '';
+        if (isset($cache[$areacode])) return $cache[$areacode];
+        $stmt = Conexion::conectar()->prepare("SELECT location FROM e_areacode WHERE areacode = :areacode LIMIT 1");
+        $stmt->bindParam(':areacode', $areacode, PDO::PARAM_STR);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $cache[$areacode] = $row ? $row['location'] : '';
+        return $cache[$areacode];
     }
 
     $fileName = 'ReportCdr_' . date('Ymd_His') . '.txt';
-    $filePath = '/filetmp/' . $fileName;
-    $fileZip = '/filetmp/CdrReport_' . date('Ymd_His') . '.zip';
+    $zipName = 'CdrReport_' . date('Ymd_His') . '.zip';
+    $tmpDir = sys_get_temp_dir();
+    $filePath = $tmpDir . DIRECTORY_SEPARATOR . $fileName;
+    $fileZip = $tmpDir . DIRECTORY_SEPARATOR . $zipName;
 
-    if (file_put_contents($filePath, $archivo_txt) === false) {
-        http_response_code(500);
-        die("Error al guardar archivo TXT.");
+    // Escribir encabezado y datos en streaming
+    $fh = fopen($filePath, 'w');
+    fwrite($fh, "NumeroSolicitado,NumeroMostrado;NumeroMarcado;DestinoMarcado;ServidorOrigen;IpOrigen;HoraInicio;Duracion;motivodeterminacion;CostoLlamada;\n");
+
+    foreach ($report as $registros) {
+        foreach ($registros as $registro) {
+            $endreason = isset($endr[$registro['endreason']]) ? $endr[$registro['endreason']]['description'] : '';
+            $areacode = getAreaCodeLocation($registro['callerareacode']);
+            $timestampColombia = $registro['starttime'] / 1000;
+            $starttime = date("Y-m-d H:i:s", $timestampColombia);
+            $feeFormatted = number_format($registro['fee'], 2, ',', '');
+            $linea = "{$registro['calleraccesse164']};{$registro['callertogatewaye164']};{$registro['calleee164']};{$areacode};{$registro['callergatewayid']};{$registro['callerip']};{$starttime};{$registro['holdtime']};{$endreason};{$feeFormatted};\n";
+            fwrite($fh, $linea);
+        }
     }
+    fclose($fh);
 
     $zip = new ZipArchive();
     if ($zip->open($fileZip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
@@ -91,9 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
     }
     $zip->addFile($filePath, $fileName);
     $zip->close();
-    unlink($filePath); // Eliminar TXT temporal
 
-    //   Respuesta final con X-Sendfile
     if (!file_exists($fileZip)) {
         http_response_code(500);
         die("ERROR: ZIP no encontrado.");
@@ -101,8 +105,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
 
     ob_end_clean();
     header('Content-Type: application/zip');
-    header('Content-Disposition: attachment; filename="CdrReport.zip"');
-    header('X-Sendfile: ' . realpath($fileZip));
+    header('Content-Disposition: attachment; filename="' . $zipName . '"');
+    header('Content-Length: ' . filesize($fileZip));
+    readfile($fileZip);
+
+    // Limpieza
+    unlink($filePath);
+    unlink($fileZip);
     exit;
 }
 
@@ -560,4 +569,3 @@ if (isset($_POST['exportarDay'])) {
     unlink($zipFileNameDay);
     exit;
 }
-

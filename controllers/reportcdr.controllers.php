@@ -22,6 +22,14 @@ class ControllersReportCdr{
         return $respuesta;
     }
 
+    static public function ctrMostrarAreaCode($item, $valor) {
+        $tabla = "e_areacode";
+
+        $respuesta = ModeloReportCdr::MdlMostrarAreaName($tabla, $item, $valor);
+
+        return $respuesta;
+    }
+
     // static public function ctrMostrarDatosMesAnt($item, $valor){
 
     //     $restmes = (date('m') - 1);
