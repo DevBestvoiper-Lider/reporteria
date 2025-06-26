@@ -116,12 +116,10 @@ class ModeloReportCdr
     static public function MdlMostrarAreaName($tabla, $item, $valor)
     {
         if ($item != null) {
-
-            $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :$item");
-            $stmt->bindParam(":" . $item, $valor, PDO::PARAM_STR);
+            $stmt = Conexion::conectar()->prepare("SELECT location FROM $tabla WHERE $item = :$item LIMIT 1");
+            $stmt->bindParam(':' . $item, $valor, PDO::PARAM_STR);
             $stmt->execute();
-
-            return $stmt->fetch();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         } else {
             $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla");
             $stmt->execute();
