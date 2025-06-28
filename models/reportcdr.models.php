@@ -51,7 +51,7 @@ class ModeloReportCdr
                             $sql .= ' calleee164 LIKE "%' . $callee . '" AND';
                         }
 
-                        $sql .= " $item = :$item ORDER BY id DESC LIMIT 500";
+                        $sql .= " $item = :$item ORDER BY id DESC LIMIT 10";
 
                         $sql = rtrim($sql, " AND");
 

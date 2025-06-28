@@ -118,6 +118,7 @@ ini_set('max_execution_time', 0); // sin límite de tiempo
               $_GET["ruta"] == "dayconsumption" ||
               $_GET["ruta"] == "tarifas" ||
               $_GET["ruta"] == "Anti-hack" ||
+              $_GET["ruta"] == "reportconsumo" ||
               $_GET["ruta"] == "salir")
             {
               include "modulos/".$_GET["ruta"].".php";
@@ -135,6 +136,7 @@ ini_set('max_execution_time', 0); // sin límite de tiempo
               $_GET["ruta"] == "dayconsumption" ||
               $_GET["ruta"] == "modalPassword" ||
               $_GET["ruta"] == "tarifas" ||
+              $_GET["ruta"] == "reportconsumo" ||
               $_GET["ruta"] == "salir")
             {
               include "modulos/".$_GET["ruta"].".php";

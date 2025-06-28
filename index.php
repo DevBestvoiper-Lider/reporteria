@@ -10,6 +10,7 @@ require_once 'controllers/miaccount.controllers.php';
 require_once 'controllers/reportcdr.controllers.php';
 require_once 'controllers/payhistory.controllers.php';
 require_once 'controllers/consumption.controllers.php';
+require_once 'controllers/reportconsumo.controllers.php';
 require_once 'controllers/firewall.controllers.php';
 
 require_once 'models/firewall.models.php';
@@ -19,6 +20,7 @@ require_once 'models/miaccount.models.php';
 require_once 'models/reportcdr.models.php';
 require_once 'models/payhistory.models.php';
 require_once 'models/consumption.models.php';
+require_once 'models/reportconsumo.models.php';
 
 $plantilla = new ControllersPlantilla();
 

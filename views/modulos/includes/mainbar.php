@@ -26,6 +26,11 @@
                         </a>
                     </li>
                     <li>
+                        <a href="reportconsumo">
+                            <i class="bi bi-circle"></i><span>Reporte de Consumo por Linea</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="monthconsumption">
                             <i class="bi bi-circle"></i><span>Reporte Consumo Mensual</span>
                         </a>
