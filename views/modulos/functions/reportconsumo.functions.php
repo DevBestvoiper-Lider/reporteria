@@ -38,7 +38,7 @@ if (isset($tuArray)) {
                 $totalTime += intval($registro['feetime']);
             }
             // Agrupar por numsolic (calleraccesse164)
-            $numsolic = $registro['calleraccesse164'] ?? null;
+            $numsolic = isset($registro['calleraccesse164']) ? $registro['calleraccesse164'] : null;
             if ($numsolic !== null) {
                 if (!isset($solicData[$numsolic])) {
                     $solicData[$numsolic] = ['fee' => 0, 'feetime' => 0];
