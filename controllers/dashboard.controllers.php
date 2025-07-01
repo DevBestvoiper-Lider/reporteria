@@ -16,25 +16,18 @@ class ControllersDashboard{
 
     static public function ctrMostrarDatosAyer($item, $valor){
 
-        $dia01 = date('Ym').'01';
+        // Mejor forma: solo usa DateTime para obtener el día anterior
+        $ayer = new DateTime();
+        $ayer->modify('-1 day');
+        $dia = $ayer->format('d');
+        $mes = $ayer->format('m');
+        $ano = $ayer->format('Y');
 
-        if (date('Ymd') != $dia01) {
-            $dia = sprintf("%02d", (date('d')-2));
-        } else {
-            $restmes = (date('m') - 1);
-            $mes = sprintf("%02d", $restmes);
-            $dia = $mes.'30';
-        }
-
-        $ano = date('Y');
-
-        $diaformat = date('m') . $dia;
-
-        $ayer = $diaformat;
-        
-        $tabla = "e_reportcustomerfee_". $ano .$ayer;
+        $diaformat = $mes . $dia;
+        $tabla = "e_reportcustomerfee_" . $ano . $diaformat;
 
         $respuesta = ModeloDashboard::MdlMostrarDatosAyer( $tabla, $item, $valor);
+        return $respuesta;
     }
 
     static public function ctrMostrarDatosMes($item, $valor){
