@@ -75,7 +75,7 @@ include_once 'functions/payhistory.functions.php';
                                         foreach ($dataArray as $data) {
                                         
                                             $timestamp = $data['time'] / 1000; // Convertir a segundos
-                                            $colombiaOffset = -7 * 3600; // Offset en segundos (5 horas atrás)
+                                            $colombiaOffset = -0 * 3600; // Offset en segundos (5 horas atrás)
                                             
                                             $timestampColombia = $timestamp + $colombiaOffset;
                                             

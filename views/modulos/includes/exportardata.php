@@ -79,7 +79,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
 
     foreach ($report as $registros) {
         foreach ($registros as $registro) {
-            $endreason = isset($endr[$registro['endreason']]) ? $endr[$registro['endreason']]['description'] : '';
+            // Buscar la descripción del endreason por code en $endr
+            $endreason = '';
+            if (isset($registro['endreason']) && $registro['endreason'] !== '') {
+                foreach ($endr as $row) {
+                    if (
+                        (isset($row['code']) && $row['code'] == $registro['endreason'])
+                    ) {
+                        $desc = $row['description'];
+                        if ($desc === "Caller Hangup") {
+                            $endreason = "Empresa";
+                        } else if ($desc === "Callee Hangup") {
+                            $endreason = "Cliente";
+                        } else {
+                            $endreason = $desc;
+                        }
+                        break;
+                    }
+                }
+            }
             $areacode = getAreaCodeLocation($registro['callerareacode']);
             $timestampColombia = $registro['starttime'] / 1000;
             $starttime = date("Y-m-d H:i:s", $timestampColombia);
