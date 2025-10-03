@@ -49,8 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
             
             // Primer filtro de duración
             if (!empty($operador_duracion1) && !empty($duracion1)) {
-                if ($operador_duracion1 == 'BETWEEN' && !empty($_POST['duracion_hasta1'])) {
-                    $duracion_hasta1 = $_POST['duracion_hasta1'];
+                if ($operador_duracion1 == 'BETWEEN' && !empty($_POST['duracion_valor1'])) {
+                    $duracion_hasta1 = $_POST['duracion_valor1'];
                     $condiciones_duracion[] = "holdtime BETWEEN $duracion1 AND $duracion_hasta1";
                 } else if ($operador_duracion1 != 'BETWEEN') {
                     $condiciones_duracion[] = "holdtime $operador_duracion1 $duracion1";
@@ -59,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
 
             // Segundo filtro de duración
             if (!empty($operador_duracion2) && !empty($duracion2)) {
-                if ($operador_duracion2 == 'BETWEEN' && !empty($_POST['duracion_hasta2'])) {
-                    $duracion_hasta2 = $_POST['duracion_hasta2'];
+                if ($operador_duracion2 == 'BETWEEN' && !empty($_POST['duracion_valor2'])) {
+                    $duracion_hasta2 = $_POST['duracion_valor2'];
                     $condiciones_duracion[] = "holdtime BETWEEN $duracion2 AND $duracion_hasta2";
                 } else if ($operador_duracion2 != 'BETWEEN') {
                     $condiciones_duracion[] = "holdtime $operador_duracion2 $duracion2";
