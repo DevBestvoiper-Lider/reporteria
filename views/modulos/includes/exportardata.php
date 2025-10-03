@@ -13,80 +13,167 @@ $valor = $accountname;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'exportar') {
 
-    $tabla = "e_cdr_%";
-    $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE '$tabla'");
-    $stmt->execute();
-    $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    try {
+        $tabla = "e_cdr_%";
+        $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE '$tabla'");
+        $stmt->execute();
+        $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    $caller = $_POST["caller"];
-    $callee = $_POST["callee"];
-    $callerSolic = $_POST["callerSolic"];
-    $fechaini = isset($_POST['fechainicio']) ? str_replace("-", "", $_POST['fechainicio']) : null;
-    $fechafin = isset($_POST['fechafin']) ? str_replace("-", "", $_POST['fechafin']) : null;
+        // Recopila los datos del formulario con validación
+        $caller = isset($_POST["caller"]) ? trim($_POST["caller"]) : '';
+        $callee = isset($_POST["callee"]) ? trim($_POST["callee"]) : '';
+        $callerSolic = isset($_POST["callerSolic"]) ? trim($_POST["callerSolic"]) : '';
 
-    $report = [];
+        // Filtros de duración
+        $operador_duracion1 = isset($_POST["operador_duracion1"]) ? $_POST["operador_duracion1"] : '';
+        $duracion_valor1 = isset($_POST["duracion_valor1"]) ? $_POST["duracion_valor1"] : '';
+        $duracion_hasta1 = isset($_POST["duracion_hasta1"]) ? $_POST["duracion_hasta1"] : '';
+        $operador_duracion2 = isset($_POST["operador_duracion2"]) ? $_POST["operador_duracion2"] : '';
+        $duracion_valor2 = isset($_POST["duracion_valor2"]) ? $_POST["duracion_valor2"] : '';
+        $duracion_hasta2 = isset($_POST["duracion_hasta2"]) ? $_POST["duracion_hasta2"] : '';
+        $logica_duracion = isset($_POST["logica_duracion"]) ? $_POST["logica_duracion"] : 'AND';
 
-    foreach ($tables as $table) {
-        $table_date = substr($table, -8);
-        if ($table_date >= $fechaini && $table_date <= $fechafin) {
-            $sql = "SELECT calleraccesse164,callertogatewaye164, calleee164, callerareacode, callergatewayid, callerip, starttime, holdtime, fee, endreason FROM $table WHERE";
-
-            if (!empty($caller)) {
-                $sql .= ' callertogatewaye164 LIKE "%' . $caller . '" AND';
-            }
-
-                if (!empty($callerSolic)) {
-                $sql .= ' calleraccesse164 LIKE "%' . $callerSolic . '" AND';
-            }
-
-            if (!empty($callee)) {
-                $sql .= ' calleee164 LIKE "%' . $callee . '" AND';
-            }
-
-
-            // Filtros de duración mejorados
-            $condiciones_duracion = array();
+        if (isset($_POST['fechainicio']) && isset($_POST['fechafin'])) {
+            $fechaini = str_replace("-", "", $_POST['fechainicio']);
+            $fechafin = str_replace("-", "", $_POST['fechafin']);
             
-            // Primer filtro de duración
-            if (!empty($operador_duracion1) && !empty($duracion1)) {
-                if ($operador_duracion1 == 'BETWEEN' && !empty($_POST['duracion_valor1'])) {
-                    $duracion_hasta1 = $_POST['duracion_valor1'];
-                    $condiciones_duracion[] = "holdtime BETWEEN $duracion1 AND $duracion_hasta1";
-                } else if ($operador_duracion1 != 'BETWEEN') {
-                    $condiciones_duracion[] = "holdtime $operador_duracion1 $duracion1";
-                }
+            // Validar formato de fecha
+            if (!preg_match('/^\d{8}$/', $fechaini) || !preg_match('/^\d{8}$/', $fechafin)) {
+                echo "Error: Formato de fecha inválido";
+                exit;
             }
-
-            // Segundo filtro de duración
-            if (!empty($operador_duracion2) && !empty($duracion2)) {
-                if ($operador_duracion2 == 'BETWEEN' && !empty($_POST['duracion_valor2'])) {
-                    $duracion_hasta2 = $_POST['duracion_valor2'];
-                    $condiciones_duracion[] = "holdtime BETWEEN $duracion2 AND $duracion_hasta2";
-                } else if ($operador_duracion2 != 'BETWEEN') {
-                    $condiciones_duracion[] = "holdtime $operador_duracion2 $duracion2";
-                }
-            }
-
-            // Agregar condiciones de duración con la lógica correspondiente
-            if (count($condiciones_duracion) == 1) {
-                $sql .= " " . $condiciones_duracion[0] . " AND";
-            } else if (count($condiciones_duracion) == 2) {
-                $operador_logico = ($logica_duracion == 'OR') ? 'OR' : 'AND';
-                $sql .= " (" . $condiciones_duracion[0] . " $operador_logico " . $condiciones_duracion[1] . ") AND";
-            }
-
-            $sql .= " $item = :$item ORDER BY id DESC";
-
-            // Limpiar AND sobrante antes del item final
-            $sql = str_replace(" AND $item = :$item", " AND $item = :$item", $sql);
-            $sql = str_replace("WHERE AND", "WHERE", $sql);
-
-            $stmt = Conexion::conectar()->prepare($sql);
-            $stmt->bindParam(":" . $item, $valor, PDO::PARAM_STR);
-            $stmt->execute();
-
-            $report[$table] = $stmt->fetchAll();
+        } else {
+            echo "Error: Fechas requeridas para exportación";
+            exit;
         }
+
+        // Filtrar tablas por rango de fechas
+        $validTables = array();
+        foreach ($tables as $table) {
+            $table_date = substr($table, -8);
+            if (is_numeric($table_date) && $table_date >= $fechaini && $table_date <= $fechafin) {
+                $validTables[] = $table;
+            }
+        }
+
+        if (empty($validTables)) {
+            echo "No hay datos en el rango de fechas seleccionado";
+            exit;
+        }
+
+        // Filtrar tablas que realmente tienen datos para este account
+        $tablesWithData = array();
+        foreach ($validTables as $table) {
+            $checkStmt = Conexion::conectar()->prepare("SELECT COUNT(*) as count FROM $table WHERE $item = ? LIMIT 1");
+            $checkStmt->execute(array($valor));
+            $count = $checkStmt->fetch(PDO::FETCH_ASSOC);
+            if ($count['count'] > 0) {
+                $tablesWithData[] = $table;
+            }
+        }
+
+        if (empty($tablesWithData)) {
+            echo "No hay datos para exportar";
+            exit;
+        }
+
+        // Construir condiciones WHERE con prepared statements seguros
+        $conditions = array();
+        $params = array();
+        
+        if (!empty($caller)) {
+            $conditions[] = 'callertogatewaye164 LIKE ?';
+            $params[] = "%$caller%";
+        }
+
+        if (!empty($callerSolic)) {
+            $conditions[] = 'calleraccesse164 LIKE ?';
+            $params[] = "%$callerSolic%";
+        }
+
+        if (!empty($callee)) {
+            $conditions[] = 'calleee164 LIKE ?';
+            $params[] = "%$callee%";
+        }
+
+        // Construir filtros de duración
+        $condiciones_duracion = array();
+        
+        // Primer filtro de duración
+        if (!empty($operador_duracion1) && !empty($duracion_valor1)) {
+            if ($operador_duracion1 == 'BETWEEN' && !empty($duracion_hasta1)) {
+                $condiciones_duracion[] = "holdtime BETWEEN ? AND ?";
+                $params[] = $duracion_valor1;
+                $params[] = $duracion_hasta1;
+            } else if ($operador_duracion1 != 'BETWEEN') {
+                $condiciones_duracion[] = "holdtime $operador_duracion1 ?";
+                $params[] = $duracion_valor1;
+            }
+        }
+
+        // Segundo filtro de duración
+        if (!empty($operador_duracion2) && !empty($duracion_valor2)) {
+            if ($operador_duracion2 == 'BETWEEN' && !empty($duracion_hasta2)) {
+                $condiciones_duracion[] = "holdtime BETWEEN ? AND ?";
+                $params[] = $duracion_valor2;
+                $params[] = $duracion_hasta2;
+            } else if ($operador_duracion2 != 'BETWEEN') {
+                $condiciones_duracion[] = "holdtime $operador_duracion2 ?";
+                $params[] = $duracion_valor2;
+            }
+        }
+
+        // Agregar condiciones de duración con la lógica correspondiente
+        if (count($condiciones_duracion) == 1) {
+            $conditions[] = $condiciones_duracion[0];
+        } else if (count($condiciones_duracion) == 2) {
+            $operador_logico = ($logica_duracion == 'OR') ? 'OR' : 'AND';
+            $conditions[] = "(" . $condiciones_duracion[0] . " $operador_logico " . $condiciones_duracion[1] . ")";
+        }
+
+        $conditions[] = "$item = ?";
+        $params[] = $valor;
+
+        $whereClause = implode(" AND ", $conditions);
+
+        // Construir UNION ALL para exportación (sin límite)
+        $unionQueries = array();
+        $allParams = array();
+        
+        foreach ($tablesWithData as $table) {
+            $unionQueries[] = "(SELECT 
+                calleraccesse164, 
+                callertogatewaye164, 
+                calleee164, 
+                callerareacode, 
+                callergatewayid, 
+                callerip, 
+                starttime, 
+                holdtime, 
+                fee, 
+                endreason
+                FROM $table 
+                WHERE $whereClause)";
+            
+            $allParams = array_merge($allParams, $params);
+        }
+
+        $finalQuery = implode(" UNION ALL ", $unionQueries) . " ORDER BY starttime DESC";
+
+        $stmt = Conexion::conectar()->prepare($finalQuery);
+        
+        // Bind parameters usando índices posicionales
+        for ($i = 0; $i < count($allParams); $i++) {
+            $stmt->bindValue($i + 1, $allParams[$i], PDO::PARAM_STR);
+        }
+        
+        $stmt->execute();
+        $report = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (Exception $e) {
+        error_log("Error en exportación CDR: " . $e->getMessage());
+        echo "Error en la exportación";
+        exit;
     }
 
     $endr = Conexion::conectar()->query("SELECT * FROM e_end_reason")->fetchAll(PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
@@ -112,36 +199,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
 
     // Escribir encabezado y datos en streaming
     $fh = fopen($filePath, 'w');
-    fwrite($fh, "NumeroSolicitado,NumeroMostrado;NumeroMarcado;DestinoMarcado;ServidorOrigen;IpOrigen;HoraInicio;Duracion;motivodeterminacion;CostoLlamada;\n");
+    fwrite($fh, "NumeroSolicitado;NumeroMostrado;NumeroMarcado;DestinoMarcado;ServidorOrigen;IpOrigen;HoraInicio;Duracion;motivodeterminacion;CostoLlamada;\n");
 
-    foreach ($report as $registros) {
-        foreach ($registros as $registro) {
-            // Buscar la descripción del endreason por code en $endr
-            $endreason = '';
-            if (isset($registro['endreason']) && $registro['endreason'] !== '') {
-                foreach ($endr as $row) {
-                    if (
-                        (isset($row['code']) && $row['code'] == $registro['endreason'])
-                    ) {
-                        $desc = $row['description'];
-                        if ($desc === "Caller Hangup") {
-                            $endreason = "Empresa";
-                        } else if ($desc === "Callee Hangup") {
-                            $endreason = "Cliente";
-                        } else {
-                            $endreason = $desc;
-                        }
-                        break;
+    // Con la nueva implementación UNION ALL, $report es un array simple de registros
+    foreach ($report as $registro) {
+        // Buscar la descripción del endreason por code en $endr
+        $endreason = '';
+        if (isset($registro['endreason']) && $registro['endreason'] !== '') {
+            foreach ($endr as $row) {
+                if (isset($row['code']) && $row['code'] == $registro['endreason']) {
+                    $desc = isset($row['description']) ? $row['description'] : '';
+                    if ($desc === "Caller Hangup") {
+                        $endreason = "Empresa";
+                    } else if ($desc === "Callee Hangup") {
+                        $endreason = "Cliente";
+                    } else {
+                        $endreason = $desc;
                     }
+                    break;
                 }
             }
-            $areacode = getAreaCodeLocation($registro['callerareacode']);
-            $timestampColombia = (int)($registro['starttime'] / 1000); // Convertir a entero para evitar el warning
-            $starttime = date("Y-m-d H:i:s", $timestampColombia);
-            $feeFormatted = number_format($registro['fee'], 2, ',', '');
-            $linea = "{$registro['calleraccesse164']};{$registro['callertogatewaye164']};{$registro['calleee164']};{$areacode};{$registro['callergatewayid']};{$registro['callerip']};{$starttime};{$registro['holdtime']};{$endreason};{$feeFormatted};\n";
-            fwrite($fh, $linea);
         }
+        
+        $areacode = getAreaCodeLocation(isset($registro['callerareacode']) ? $registro['callerareacode'] : '');
+        $timestampColombia = (int)($registro['starttime'] / 1000); // Convertir a entero para evitar el warning
+        $starttime = date("Y-m-d H:i:s", $timestampColombia);
+        $feeFormatted = number_format($registro['fee'], 2, ',', '');
+        
+        $linea = "{$registro['calleraccesse164']};{$registro['callertogatewaye164']};{$registro['calleee164']};{$areacode};{$registro['callergatewayid']};{$registro['callerip']};{$starttime};{$registro['holdtime']};{$endreason};{$feeFormatted};\n";
+        fwrite($fh, $linea);
     }
     fclose($fh);
 
