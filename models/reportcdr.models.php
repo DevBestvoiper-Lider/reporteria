@@ -20,18 +20,18 @@ class ModeloReportCdr
 
                 if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Recopila los datos del formulario con validación
-                    $caller = trim($_POST["caller"] ?? '');
-                    $callee = trim($_POST["callee"] ?? '');
-                    $callerSolic = trim($_POST["callerSolic"] ?? '');
+                    $caller = isset($_POST["caller"]) ? trim($_POST["caller"]) : '';
+                    $callee = isset($_POST["callee"]) ? trim($_POST["callee"]) : '';
+                    $callerSolic = isset($_POST["callerSolic"]) ? trim($_POST["callerSolic"]) : '';
 
                     // Filtros de duración
-                    $operador_duracion1 = $_POST["operador_duracion1"] ?? '';
-                    $duracion_valor1 = $_POST["duracion_valor1"] ?? '';
-                    $duracion_hasta1 = $_POST["duracion_hasta1"] ?? '';
-                    $operador_duracion2 = $_POST["operador_duracion2"] ?? '';
-                    $duracion_valor2 = $_POST["duracion_valor2"] ?? '';
-                    $duracion_hasta2 = $_POST["duracion_hasta2"] ?? '';
-                    $logica_duracion = $_POST["logica_duracion"] ?? 'AND';
+                    $operador_duracion1 = isset($_POST["operador_duracion1"]) ? $_POST["operador_duracion1"] : '';
+                    $duracion_valor1 = isset($_POST["duracion_valor1"]) ? $_POST["duracion_valor1"] : '';
+                    $duracion_hasta1 = isset($_POST["duracion_hasta1"]) ? $_POST["duracion_hasta1"] : '';
+                    $operador_duracion2 = isset($_POST["operador_duracion2"]) ? $_POST["operador_duracion2"] : '';
+                    $duracion_valor2 = isset($_POST["duracion_valor2"]) ? $_POST["duracion_valor2"] : '';
+                    $duracion_hasta2 = isset($_POST["duracion_hasta2"]) ? $_POST["duracion_hasta2"] : '';
+                    $logica_duracion = isset($_POST["logica_duracion"]) ? $_POST["logica_duracion"] : 'AND';
 
                     if (isset($_POST['fechainicio']) && isset($_POST['fechafin'])) {
                         $fechaini = str_replace("-", "", $_POST['fechainicio']);

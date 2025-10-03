@@ -47,21 +47,21 @@ if (isset($reportcdr) && is_array($reportcdr) && !empty($reportcdr)) {
 
         // Obtener información del área code
         $item = "areacode";
-        $valor = $registro['callerareacode'] ?? '';
+        $valor = isset($registro['callerareacode']) ? $registro['callerareacode'] : '';
         $AreaCode = ControllersReportCdr::ctrMostrarAreaCode($item, $valor);
 
         $areacodeLocation = (is_array($AreaCode) && isset($AreaCode['location'])) ? $AreaCode['location'] : 'N/A';
 
         $dataArray[] = array(
-            'calleraccesse164' => $registro['calleraccesse164'] ?? '',
-            'callertogatewaye164' => $registro['callertogatewaye164'] ?? '',
+            'calleraccesse164' => isset($registro['calleraccesse164']) ? $registro['calleraccesse164'] : '',
+            'callertogatewaye164' => isset($registro['callertogatewaye164']) ? $registro['callertogatewaye164'] : '',
             'areacode' => $areacodeLocation,
             'endreason' => $endreason,
-            'calleee164' => $registro['calleee164'] ?? '',
-            'callergatewayid' => $registro['callergatewayid'] ?? '',
-            'starttime' => $registro['starttime'] ?? 0,
-            'holdtime' => $registro['holdtime'] ?? 0,
-            'fee' => $registro['fee'] ?? 0,
+            'calleee164' => isset($registro['calleee164']) ? $registro['calleee164'] : '',
+            'callergatewayid' => isset($registro['callergatewayid']) ? $registro['callergatewayid'] : '',
+            'starttime' => isset($registro['starttime']) ? $registro['starttime'] : 0,
+            'holdtime' => isset($registro['holdtime']) ? $registro['holdtime'] : 0,
+            'fee' => isset($registro['fee']) ? $registro['fee'] : 0,
         );
     }
 }
