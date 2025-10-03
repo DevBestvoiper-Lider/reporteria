@@ -1,5 +1,4 @@
 <?php
-
 $active = "CDR Reportes";
 
 $accountname = $_SESSION['customeraccountname'];

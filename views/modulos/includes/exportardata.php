@@ -42,12 +42,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
             if (!empty($callee)) {
                 $sql .= ' calleee164 LIKE "%' . $callee . '" AND';
             }
-            $sql .= " $item = :$item";
-            $sql = rtrim($sql, " AND");
+
+
+            // Filtros de duración mejorados
+            $condiciones_duracion = array();
+            
+            // Primer filtro de duración
+            if (!empty($operador_duracion1) && !empty($duracion1)) {
+                if ($operador_duracion1 == 'BETWEEN' && !empty($_POST['duracion_hasta1'])) {
+                    $duracion_hasta1 = $_POST['duracion_hasta1'];
+                    $condiciones_duracion[] = "holdtime BETWEEN $duracion1 AND $duracion_hasta1";
+                } else if ($operador_duracion1 != 'BETWEEN') {
+                    $condiciones_duracion[] = "holdtime $operador_duracion1 $duracion1";
+                }
+            }
+
+            // Segundo filtro de duración
+            if (!empty($operador_duracion2) && !empty($duracion2)) {
+                if ($operador_duracion2 == 'BETWEEN' && !empty($_POST['duracion_hasta2'])) {
+                    $duracion_hasta2 = $_POST['duracion_hasta2'];
+                    $condiciones_duracion[] = "holdtime BETWEEN $duracion2 AND $duracion_hasta2";
+                } else if ($operador_duracion2 != 'BETWEEN') {
+                    $condiciones_duracion[] = "holdtime $operador_duracion2 $duracion2";
+                }
+            }
+
+            // Agregar condiciones de duración con la lógica correspondiente
+            if (count($condiciones_duracion) == 1) {
+                $sql .= " " . $condiciones_duracion[0] . " AND";
+            } else if (count($condiciones_duracion) == 2) {
+                $operador_logico = ($logica_duracion == 'OR') ? 'OR' : 'AND';
+                $sql .= " (" . $condiciones_duracion[0] . " $operador_logico " . $condiciones_duracion[1] . ") AND";
+            }
+
+            $sql .= " $item = :$item ORDER BY id DESC";
+
+            // Limpiar AND sobrante antes del item final
+            $sql = str_replace(" AND $item = :$item", " AND $item = :$item", $sql);
+            $sql = str_replace("WHERE AND", "WHERE", $sql);
 
             $stmt = Conexion::conectar()->prepare($sql);
-            $stmt->bindParam(":" . $item, $valor);
+            $stmt->bindParam(":" . $item, $valor, PDO::PARAM_STR);
+
+            echo $stmt->queryString;    
             $stmt->execute();
+
             $report[$table] = $stmt->fetchAll();
         }
     }
@@ -99,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
                 }
             }
             $areacode = getAreaCodeLocation($registro['callerareacode']);
-            $timestampColombia = $registro['starttime'] / 1000;
+            $timestampColombia = (int)($registro['starttime'] / 1000); // Convertir a entero para evitar el warning
             $starttime = date("Y-m-d H:i:s", $timestampColombia);
             $feeFormatted = number_format($registro['fee'], 2, ',', '');
             $linea = "{$registro['calleraccesse164']};{$registro['callertogatewaye164']};{$registro['calleee164']};{$areacode};{$registro['callergatewayid']};{$registro['callerip']};{$starttime};{$registro['holdtime']};{$endreason};{$feeFormatted};\n";

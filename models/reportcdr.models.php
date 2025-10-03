@@ -30,6 +30,11 @@ class ModeloReportCdr
                     $fechaini = null;
                     $fechafin = null;
                 }
+                $operador_duracion1 = isset($_POST["operador_duracion1"]) ? $_POST["operador_duracion1"] : null;
+                $duracion1 = isset($_POST["duracion_valor1"]) ? $_POST["duracion_valor1"] : null;
+                $operador_duracion2 = isset($_POST["operador_duracion2"]) ? $_POST["operador_duracion2"] : null;
+                $duracion2 = isset($_POST["duracion_valor2"]) ? $_POST["duracion_valor2"] : null;
+                $logica_duracion = isset($_POST["logica_duracion"]) ? $_POST["logica_duracion"] : null;
 
                 foreach ($tables as $table) {
                     //     // Extraer la fecha de la tabla (últimos 8 caracteres del nombre)
@@ -51,12 +56,47 @@ class ModeloReportCdr
                             $sql .= ' calleee164 LIKE "%' . $callee . '" AND';
                         }
 
-                        $sql .= " $item = :$item ORDER BY id DESC LIMIT 10";
+                        // Filtros de duración mejorados
+                        $condiciones_duracion = array();
+                        
+                        // Primer filtro de duración
+                        if (!empty($operador_duracion1) && !empty($duracion1)) {
+                            if ($operador_duracion1 == 'BETWEEN' && !empty($_POST['duracion_hasta1'])) {
+                                $duracion_hasta1 = $_POST['duracion_hasta1'];
+                                $condiciones_duracion[] = "holdtime BETWEEN $duracion1 AND $duracion_hasta1";
+                            } else if ($operador_duracion1 != 'BETWEEN') {
+                                $condiciones_duracion[] = "holdtime $operador_duracion1 $duracion1";
+                            }
+                        }
 
-                        $sql = rtrim($sql, " AND");
+                        // Segundo filtro de duración
+                        if (!empty($operador_duracion2) && !empty($duracion2)) {
+                            if ($operador_duracion2 == 'BETWEEN' && !empty($_POST['duracion_hasta2'])) {
+                                $duracion_hasta2 = $_POST['duracion_hasta2'];
+                                $condiciones_duracion[] = "holdtime BETWEEN $duracion2 AND $duracion_hasta2";
+                            } else if ($operador_duracion2 != 'BETWEEN') {
+                                $condiciones_duracion[] = "holdtime $operador_duracion2 $duracion2";
+                            }
+                        }
+
+                        // Agregar condiciones de duración con la lógica correspondiente
+                        if (count($condiciones_duracion) == 1) {
+                            $sql .= " " . $condiciones_duracion[0] . " AND";
+                        } else if (count($condiciones_duracion) == 2) {
+                            $operador_logico = ($logica_duracion == 'OR') ? 'OR' : 'AND';
+                            $sql .= " (" . $condiciones_duracion[0] . " $operador_logico " . $condiciones_duracion[1] . ") AND";
+                        }
+
+                        $sql .= " $item = :$item ORDER BY id DESC";
+
+                        // Limpiar AND sobrante antes del item final
+                        $sql = str_replace(" AND $item = :$item", " AND $item = :$item", $sql);
+                        $sql = str_replace("WHERE AND", "WHERE", $sql);
 
                         $stmt = Conexion::conectar()->prepare($sql);
                         $stmt->bindParam(":" . $item, $valor, PDO::PARAM_STR);
+
+                        echo $stmt->queryString;    
                         $stmt->execute();
 
                         $report[$table] = $stmt->fetchAll();
