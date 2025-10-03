@@ -95,8 +95,6 @@ class ModeloReportCdr
 
                         $stmt = Conexion::conectar()->prepare($sql);
                         $stmt->bindParam(":" . $item, $valor, PDO::PARAM_STR);
-
-                        echo $stmt->queryString;    
                         $stmt->execute();
 
                         $report[$table] = $stmt->fetchAll();

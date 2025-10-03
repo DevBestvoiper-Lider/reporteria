@@ -83,8 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
 
             $stmt = Conexion::conectar()->prepare($sql);
             $stmt->bindParam(":" . $item, $valor, PDO::PARAM_STR);
-
-            echo $stmt->queryString;    
             $stmt->execute();
 
             $report[$table] = $stmt->fetchAll();
