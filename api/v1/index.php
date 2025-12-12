@@ -6,6 +6,11 @@
  * Punto de entrada principal para la API REST
  */
 
+// Habilitar display de errores para debugging (cambiar a 0 en producción)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+
 // Headers CORS y JSON
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json; charset=UTF-8');
@@ -18,55 +23,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Cargar configuración y autoloader
-require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../models/conexion.php';
-require_once __DIR__ . '/config/config.php';
-require_once __DIR__ . '/middleware/auth.php';
-require_once __DIR__ . '/helpers/response.php';
-
-// Iniciar sesión para validación
-session_start();
-
-// Cargar controladores
-require_once __DIR__ . '/../../controllers/dashboard.controllers.php';
-require_once __DIR__ . '/../../controllers/consumption.controllers.php';
-require_once __DIR__ . '/../../controllers/reportcdr.controllers.php';
-require_once __DIR__ . '/../../controllers/reportconsumo.controllers.php';
-require_once __DIR__ . '/../../controllers/payhistory.controllers.php';
-require_once __DIR__ . '/../../controllers/miaccount.controllers.php';
-require_once __DIR__ . '/../../controllers/usuarios.controllers.php';
-
-// Cargar modelos
-require_once __DIR__ . '/../../models/dashboard.models.php';
-require_once __DIR__ . '/../../models/consumption.models.php';
-require_once __DIR__ . '/../../models/reportcdr.models.php';
-require_once __DIR__ . '/../../models/reportconsumo.models.php';
-require_once __DIR__ . '/../../models/payhistory.models.php';
-require_once __DIR__ . '/../../models/miaccount.models.php';
-require_once __DIR__ . '/../../models/usuarios.models.php';
-
-// Obtener método y ruta
-$method = $_SERVER['REQUEST_METHOD'];
-$uri = $_SERVER['REQUEST_URI'];
-
-// Parsear la URI
-$uri = parse_url($uri, PHP_URL_PATH);
-
-// Obtener el path relativo a este script
-$scriptPath = dirname($_SERVER['SCRIPT_NAME']);
-if (strpos($uri, $scriptPath) === 0) {
-    $uri = substr($uri, strlen($scriptPath));
-}
-
-$uri = trim($uri, '/');
-$GLOBALS['uriParts'] = explode('/', $uri);
-$uriParts = $GLOBALS['uriParts'];
-
-// Router principal
-$endpoint = $uriParts[0] ?? 'index';
-
+// Manejar errores con try-catch global
 try {
+    // Cargar configuración y autoloader
+    require_once __DIR__ . '/../../vendor/autoload.php';
+    require_once __DIR__ . '/../../models/conexion.php';
+    require_once __DIR__ . '/config/config.php';
+    require_once __DIR__ . '/middleware/auth.php';
+    require_once __DIR__ . '/helpers/response.php';
+
+    // Iniciar sesión para validación
+    session_start();
+
+    // Cargar controladores
+    require_once __DIR__ . '/../../controllers/dashboard.controllers.php';
+    require_once __DIR__ . '/../../controllers/consumption.controllers.php';
+    require_once __DIR__ . '/../../controllers/reportcdr.controllers.php';
+    require_once __DIR__ . '/../../controllers/reportconsumo.controllers.php';
+    require_once __DIR__ . '/../../controllers/payhistory.controllers.php';
+    require_once __DIR__ . '/../../controllers/miaccount.controllers.php';
+    require_once __DIR__ . '/../../controllers/usuarios.controllers.php';
+
+    // Cargar modelos
+    require_once __DIR__ . '/../../models/dashboard.models.php';
+    require_once __DIR__ . '/../../models/consumption.models.php';
+    require_once __DIR__ . '/../../models/reportcdr.models.php';
+    require_once __DIR__ . '/../../models/reportconsumo.models.php';
+    require_once __DIR__ . '/../../models/payhistory.models.php';
+    require_once __DIR__ . '/../../models/miaccount.models.php';
+    require_once __DIR__ . '/../../models/usuarios.models.php';
+
+    // Obtener método y ruta
+    $method = $_SERVER['REQUEST_METHOD'];
+    $uri = $_SERVER['REQUEST_URI'];
+
+    // Parsear la URI
+    $uri = parse_url($uri, PHP_URL_PATH);
+
+    // Obtener el path relativo a este script
+    $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
+    if (strpos($uri, $scriptPath) === 0) {
+        $uri = substr($uri, strlen($scriptPath));
+    }
+
+    $uri = trim($uri, '/');
+    $GLOBALS['uriParts'] = explode('/', $uri);
+    $uriParts = $GLOBALS['uriParts'];
+
+    // Router principal (compatible PHP 5.5)
+    $endpoint = isset($uriParts[0]) ? $uriParts[0] : 'index';
+
     // Validar autenticación (excepto para login y documentación)
     if (!in_array($endpoint, ['auth', 'docs', 'index', ''])) {
         AuthMiddleware::validateToken();
@@ -130,5 +136,11 @@ try {
     }
 
 } catch (Exception $e) {
-    Response::error($e->getMessage(), $e->getCode() ?: 500);
+    // Log del error para debugging
+    error_log('API Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+    
+    Response::error(
+        'Error interno del servidor: ' . $e->getMessage(), 
+        ($e->getCode() ? $e->getCode() : 500)
+    );
 }

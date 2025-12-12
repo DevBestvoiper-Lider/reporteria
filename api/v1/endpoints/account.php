@@ -7,7 +7,7 @@
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uriParts = $GLOBALS['uriParts'];
-$action = $uriParts[1] ?? null;
+$action = isset($uriParts[1]) ? $uriParts[1] : null;
 
 // Obtener usuario autenticado
 $authUser = AuthMiddleware::getAuthenticatedUser();
@@ -58,8 +58,8 @@ function handleGetAccount($username) {
                 'id' => $usuario['id'],
                 'nombre' => $usuario['nombre'],
                 'customer_account_name' => $usuario['customeraccountname'],
-                'perfil' => $usuario['perfil'] ?? null,
-                'ultimo_login' => $usuario['ultimo_login'] ?? null
+                'perfil' => isset($usuario['perfil']) ? $usuario['perfil'] : null,
+                'ultimo_login' => isset($usuario['ultimo_login']) ? $usuario['ultimo_login'] : null
             ],
             'account' => [
                 'balance' => @$dashboard['money'],

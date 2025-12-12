@@ -25,8 +25,8 @@ function handlePayHistory($accountname) {
         $input = Response::getInput();
         
         // Filtros opcionales de fecha
-        $startDate = $input['start_date'] ?? null;
-        $endDate = $input['end_date'] ?? null;
+        $startDate = isset($input['start_date']) ? $input['start_date'] : null;
+        $endDate = isset($input['end_date']) ? $input['end_date'] : null;
 
         $item = 'customeraccount';
         $payhistory = ControllersPayHistory::ctrMostrarPayHistory($item, $accountname);
@@ -58,10 +58,10 @@ function handlePayHistory($accountname) {
                         'time' => $timestamp,
                         'date' => $fechaPago,
                         'datetime' => date('Y-m-d H:i:s', $timestamp),
-                        'memo' => $registro['memo'] ?? '',
+                        'memo' => isset($registro['memo']) ? $registro['memo'] : '',
                         'customer_money' => $registro['customermoney'],
                         'customer_money_formatted' => number_format($registro['customermoney'], 0, ',', '.'),
-                        'login_name' => $registro['loginname'] ?? ''
+                        'login_name' => isset($registro['loginname']) ? $registro['loginname'] : ''
                     ];
                 }
             }

@@ -11,7 +11,7 @@ class AuthMiddleware {
      */
     public static function validateToken() {
         $headers = getallheaders();
-        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+        $authHeader = isset($headers['Authorization']) ? $headers['Authorization'] : (isset($headers['authorization']) ? $headers['authorization'] : null);
 
         if (!$authHeader) {
             Response::error('Token de autenticación no proporcionado', 401);
@@ -126,6 +126,6 @@ class AuthMiddleware {
      * Obtener datos del usuario autenticado
      */
     public static function getAuthenticatedUser() {
-        return $_SESSION['api_user'] ?? null;
+        return isset($_SESSION['api_user']) ? $_SESSION['api_user'] : null;
     }
 }
