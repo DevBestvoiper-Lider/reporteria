@@ -1,0 +1,754 @@
+{
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "url": "https://sw1.bestvoiper.com/reporteria/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Autenticación",
+      "description": "Endpoints para autenticación y gestión de tokens JWT"
+    },
+    {
+      "name": "Consumo",
+      "description": "Consultas de consumo diario y mensual"
+    },
+    {
+      "name": "Reportes CDR",
+      "description": "Reportes de Call Detail Records"
+    },
+    {
+      "name": "Reportes de Consumo",
+      "description": "Reportes de consumo agrupado por línea"
+    },
+    {
+      "name": "Histórico de Pagos",
+      "description": "Consulta de pagos realizados"
+    },
+    {
+      "name": "Mi Cuenta",
+      "description": "Información y gestión de cuenta de usuario"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Iniciar sesión",
+        "description": "Autenticar usuario y obtener token JWT",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "usuario_demo"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "mi_contraseña"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Login exitoso"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "token_type": {
+                          "type": "string",
+                          "example": "Bearer"
+                        },
+                        "expires_in": {
+                          "type": "integer",
+                          "example": 86400
+                        },
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "nombre": {
+                              "type": "string"
+                            },
+                            "customeraccountname": {
+                              "type": "string"
+                            },
+                            "perfil": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Refrescar token",
+        "description": "Obtener un nuevo token JWT usando el token actual",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token refrescado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      }
+    },
+    "/consumption/day": {
+      "get": {
+        "tags": ["Consumo"],
+        "summary": "Consumo de un día específico",
+        "description": "Obtener detalle de llamadas y consumo de un día",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Fecha a consultar (formato YYYY-MM-DD). Por defecto: hoy",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-12-10"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Consumo obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsumptionDayResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          }
+        }
+      }
+    },
+    "/consumption/month": {
+      "get": {
+        "tags": ["Consumo"],
+        "summary": "Consumo mensual",
+        "description": "Obtener consumo de un rango de fechas",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "description": "Fecha inicial (formato YYYY-MM-DD)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-12-01"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "description": "Fecha final (formato YYYY-MM-DD)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-12-10"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Consumo obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsumptionMonthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reportcdr/month": {
+      "get": {
+        "tags": ["Reportes CDR"],
+        "summary": "Reporte CDR",
+        "description": "Obtener reporte completo de CDR con todos los registros (sin límite de 500)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "description": "Fecha inicial (formato YYYY-MM-DD). Por defecto: primer día del mes",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-12-01"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "description": "Fecha final (formato YYYY-MM-DD). Por defecto: hoy",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-12-12"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reporte CDR obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportCDRResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reportconsumo/month": {
+      "get": {
+        "tags": ["Reportes de Consumo"],
+        "summary": "Reporte de consumo por línea",
+        "description": "Obtener consumo agrupado por número de línea",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reporte obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportConsumoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payhistory": {
+      "get": {
+        "tags": ["Histórico de Pagos"],
+        "summary": "Histórico de pagos",
+        "description": "Obtener lista de pagos realizados con filtros opcionales",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "description": "Fecha inicial del filtro",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-11-01"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "description": "Fecha final del filtro",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-12-31"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Histórico obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayHistoryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account": {
+      "get": {
+        "tags": ["Mi Cuenta"],
+        "summary": "Información de cuenta",
+        "description": "Obtener información del usuario autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Información obtenida exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountInfoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Ingrese el token JWT obtenido en /auth/login"
+      }
+    },
+    "schemas": {
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "token": {
+                "type": "string"
+              },
+              "token_type": {
+                "type": "string"
+              },
+              "expires_in": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "ConsumptionDayResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string"
+              },
+              "total_consumption": {
+                "type": "number"
+              },
+              "total_time": {
+                "type": "integer"
+              },
+              "total_time_formatted": {
+                "type": "string"
+              },
+              "total_calls": {
+                "type": "integer"
+              },
+              "calls": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "ip": {
+                      "type": "string"
+                    },
+                    "gatewayid": {
+                      "type": "string"
+                    },
+                    "feetime": {
+                      "type": "integer"
+                    },
+                    "fee": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ConsumptionMonthResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "start_date": {
+                "type": "string"
+              },
+              "end_date": {
+                "type": "string"
+              },
+              "total_consumption": {
+                "type": "number"
+              },
+              "total_time": {
+                "type": "integer"
+              },
+              "total_calls": {
+                "type": "integer"
+              },
+              "calls": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ReportCDRResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "total_records": {
+                "type": "integer"
+              },
+              "start_date": {
+                "type": "string"
+              },
+              "end_date": {
+                "type": "string"
+              },
+              "records": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "caller_access_e164": {
+                      "type": "string"
+                    },
+                    "caller_to_gateway_e164": {
+                      "type": "string"
+                    },
+                    "areacode": {
+                      "type": "string"
+                    },
+                    "endreason": {
+                      "type": "string"
+                    },
+                    "callee_e164": {
+                      "type": "string"
+                    },
+                    "caller_gateway_id": {
+                      "type": "string"
+                    },
+                    "starttime": {
+                      "type": "integer"
+                    },
+                    "starttime_formatted": {
+                      "type": "string"
+                    },
+                    "holdtime": {
+                      "type": "integer"
+                    },
+                    "holdtime_formatted": {
+                      "type": "string"
+                    },
+                    "fee": {
+                      "type": "number"
+                    },
+                    "fee_formatted": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ReportConsumoResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "balance": {
+                "type": "number"
+              },
+              "total_consumption": {
+                "type": "number"
+              },
+              "total_time": {
+                "type": "integer"
+              },
+              "total_lines": {
+                "type": "integer"
+              },
+              "lines": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "number": {
+                      "type": "string"
+                    },
+                    "total_fee": {
+                      "type": "number"
+                    },
+                    "total_time": {
+                      "type": "integer"
+                    },
+                    "total_calls": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "PayHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "total_paid": {
+                "type": "number"
+              },
+              "total_records": {
+                "type": "integer"
+              },
+              "filters": {
+                "type": "object"
+              },
+              "payments": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "pay_money": {
+                      "type": "number"
+                    },
+                    "time": {
+                      "type": "integer"
+                    },
+                    "date": {
+                      "type": "string"
+                    },
+                    "memo": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "AccountInfoResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "nombre": {
+                    "type": "string"
+                  },
+                  "customer_account_name": {
+                    "type": "string"
+                  },
+                  "perfil": {
+                    "type": "string"
+                  }
+                }
+              },
+              "account": {
+                "type": "object",
+                "properties": {
+                  "balance": {
+                    "type": "number"
+                  },
+                  "today_consumption": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "errors": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "responses": {
+      "UnauthorizedError": {
+        "description": "Token no proporcionado o inválido",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFoundError": {
+        "description": "Recurso no encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "BadRequestError": {
+        "description": "Solicitud inválida",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

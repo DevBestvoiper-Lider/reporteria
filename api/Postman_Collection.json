@@ -1,0 +1,319 @@
+{
+  "info": {
+    "name": "API Reportería",
+    "description": "Colección de Postman para la API de Reportería",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/reporteria/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"token\", jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"tu_usuario\",\n  \"password\": \"tu_contraseña\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Today",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/today",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "today"]
+            }
+          }
+        },
+        {
+          "name": "Yesterday",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/yesterday",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "yesterday"]
+            }
+          }
+        },
+        {
+          "name": "Month",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/month",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "month"]
+            }
+          }
+        },
+        {
+          "name": "Year",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/year",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "year"]
+            }
+          }
+        },
+        {
+          "name": "Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard/summary",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "summary"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consumption",
+      "item": [
+        {
+          "name": "Day (Today)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/consumption/day",
+              "host": ["{{base_url}}"],
+              "path": ["consumption", "day"]
+            }
+          }
+        },
+        {
+          "name": "Day (Specific Date)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/consumption/day?date=2025-12-10",
+              "host": ["{{base_url}}"],
+              "path": ["consumption", "day"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2025-12-10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Month (Date Range)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/consumption/month?start_date=2025-12-01&end_date=2025-12-10",
+              "host": ["{{base_url}}"],
+              "path": ["consumption", "month"],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2025-12-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2025-12-10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Report CDR",
+      "item": [
+        {
+          "name": "Month",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reportcdr/month",
+              "host": ["{{base_url}}"],
+              "path": ["reportcdr", "month"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Report Consumo",
+      "item": [
+        {
+          "name": "Month (By Line)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reportconsumo/month",
+              "host": ["{{base_url}}"],
+              "path": ["reportconsumo", "month"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pay History",
+      "item": [
+        {
+          "name": "All Payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payhistory",
+              "host": ["{{base_url}}"],
+              "path": ["payhistory"]
+            }
+          }
+        },
+        {
+          "name": "Payments (Filtered)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payhistory?start_date=2025-11-01&end_date=2025-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["payhistory"],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2025-11-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2025-12-31"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Account",
+      "item": [
+        {
+          "name": "Get Account Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/account",
+              "host": ["{{base_url}}"],
+              "path": ["account"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"contraseña_actual\",\n  \"new_password\": \"nueva_contraseña\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/account/password",
+              "host": ["{{base_url}}"],
+              "path": ["account", "password"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

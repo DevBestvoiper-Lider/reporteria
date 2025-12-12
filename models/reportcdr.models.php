@@ -168,7 +168,13 @@ class ModeloReportCdr
                         $allParams = array_merge($allParams, $params);
                     }
 
-                    $finalQuery = implode(" UNION ALL ", $unionQueries) . " ORDER BY starttime DESC LIMIT 500";
+                    $finalQuery = implode(" UNION ALL ", $unionQueries) . " ORDER BY starttime DESC";
+                    
+                    // Aplicar límite solo si no viene desde la API
+                    $limit = isset($_POST['api_no_limit']) && $_POST['api_no_limit'] === true ? null : 500;
+                    if ($limit !== null) {
+                        $finalQuery .= " LIMIT " . $limit;
+                    }
 
                     try {
                         $stmt = Conexion::conectar()->prepare($finalQuery);
