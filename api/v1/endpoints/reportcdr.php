@@ -6,7 +6,7 @@
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uriParts = $GLOBALS['uriParts'];
-$action = isset($uriParts[1]) ? $uriParts[1] : null;
+$action = $uriParts[1] ?? null;
 
 // Obtener usuario autenticado
 $authUser = AuthMiddleware::getAuthenticatedUser();
@@ -35,8 +35,8 @@ function handleCdrMonth($accountname) {
         $input = Response::getInput();
         
         // Configurar filtros de fecha (por defecto: mes actual)
-        $startDate = isset($input['start_date']) ? $input['start_date'] : date('Y-m-01');
-        $endDate = isset($input['end_date']) ? $input['end_date'] : date('Y-m-d');
+        $startDate = $input['start_date'] ?? date('Y-m-01');
+        $endDate = $input['end_date'] ?? date('Y-m-d');
         
         // Validar formatos
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $endDate)) {
@@ -97,13 +97,13 @@ function handleCdrMonth($accountname) {
                 $fee = isset($registro['fee']) ? abs($registro['fee']) : 0;
 
                 $dataArray[] = [
-                    'caller_access_e164' => isset($registro['calleraccesse164']) ? $registro['calleraccesse164'] : '',
-                    'caller_to_gateway_e164' => isset($registro['callertogatewaye164']) ? $registro['callertogatewaye164'] : '',
+                    'caller_access_e164' => $registro['calleraccesse164'] ?? '',
+                    'caller_to_gateway_e164' => $registro['callertogatewaye164'] ?? '',
                     'areacode' => $areacodeLocation,
                     'endreason' => $endreason,
-                    'callee_e164' => isset($registro['calleee164']) ? $registro['calleee164'] : '',
-                    'caller_gateway_id' => isset($registro['callergatewayid']) ? $registro['callergatewayid'] : '',
-                    'starttime' => isset($registro['starttime']) ? $registro['starttime'] : 0,
+                    'callee_e164' => $registro['calleee164'] ?? '',
+                    'caller_gateway_id' => $registro['callergatewayid'] ?? '',
+                    'starttime' => $registro['starttime'] ?? 0,
                     'starttime_formatted' => isset($registro['starttime']) ? date('Y-m-d H:i:s', $registro['starttime']) : '',
                     'holdtime' => $holdtime,
                     'holdtime_formatted' => gmdate("H:i:s", $holdtime),

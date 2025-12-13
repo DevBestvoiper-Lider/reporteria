@@ -5,22 +5,28 @@ class Conexion
 
     static public function conectar()
     {
-
-
+        // Detectar si estamos en Docker
+        $isDocker = file_exists('/.dockerenv') || getenv('DOCKER_ENV') === 'true';
         $environment = getenv('APP_ENV');
 
-        if ($environment === 'production') {
-            // If the environment is production, use the production database credentials
-            $host = 'localhost';
-            $dbname = 'vos3000';
-            $username = 'root';
-            $password = 'd57hgtfresh3rdxy78D';
+        if ($isDocker) {
+            // Configuración para Docker
+            $host = getenv('DB_HOST') ?: 'db';
+            $dbname = getenv('DB_NAME') ?: 'reporteria_db';
+            $username = getenv('DB_USER') ?: 'reporteria_user';
+            $password = getenv('DB_PASS') ?: 'reporteria_pass';
+        } elseif ($environment === 'production') {
+            // Producción (servidor real)
+            $host = getenv('DB_HOST') ?: 'localhost';
+            $dbname = getenv('DB_NAME') ?: 'vos3000';
+            $username = getenv('DB_USER') ?: 'root';
+            $password = getenv('DB_PASS') ?: 'd57hgtfresh3rdxy78D';
         } else {
-            // If the environment is not production, use the development database credentials
-            $host = 'sw1.bestvoiper.com';
-            $dbname = 'vos3000';
-            $username = 'developers';
-            $password = 'Luisda0806*++';
+            // Desarrollo local
+            $host = getenv('DB_HOST') ?: 'sw1.bestvoiper.com';
+            $dbname = getenv('DB_NAME') ?: 'vos3000';
+            $username = getenv('DB_USER') ?: 'developers';
+            $password = getenv('DB_PASS') ?: 'Luisda0806*++';
         }
 
         $link = new PDO(

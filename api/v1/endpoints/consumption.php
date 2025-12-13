@@ -7,7 +7,7 @@
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uriParts = $GLOBALS['uriParts'];
-$action = isset($uriParts[1]) ? $uriParts[1] : null;
+$action = $uriParts[1] ?? null;
 
 // Obtener usuario autenticado
 $authUser = AuthMiddleware::getAuthenticatedUser();
@@ -40,7 +40,7 @@ function handleDay($accountname) {
         $input = Response::getInput();
         
         // Filtro de fecha (igual que en las vistas)
-        $fecha = isset($input['date']) ? $input['date'] : date('Y-m-d');
+        $fecha = $input['date'] ?? date('Y-m-d');
         
         // Validar formato de fecha
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
@@ -121,8 +121,8 @@ function handleMonthConsumption($accountname) {
         $input = Response::getInput();
         
         // Filtros de fecha
-        $startDate = isset($input['start_date']) ? $input['start_date'] : date('Y-m-01');
-        $endDate = isset($input['end_date']) ? $input['end_date'] : date('Y-m-d');
+        $startDate = $input['start_date'] ?? date('Y-m-01');
+        $endDate = $input['end_date'] ?? date('Y-m-d');
         
         // Validar formatos
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $endDate)) {

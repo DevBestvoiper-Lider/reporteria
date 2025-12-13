@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # Servidor web con PHP 8.2 y Apache
+  web:
+    build: .
+    container_name: reporteria-api
+    ports:
+      - "8088:88"
+    volumes:
+      - ./:/var/www/html/reporteria
+      - ./api/v1/.htaccess:/var/www/html/reporteria/api/v1/.htaccess
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/reporteria
+      - DOCKER_ENV=true
+      - DB_HOST=db
+      - DB_NAME=reporteria_db
+      - DB_USER=reporteria_user
+      - DB_PASS=reporteria_pass
+    networks:
+      - reporteria-network
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  # Base de datos MySQL
+  db:
+    image: mysql:8.0
+    container_name: reporteria-db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: reporteria_db
+      MYSQL_USER: reporteria_user
+      MYSQL_PASSWORD: reporteria_pass
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d
+    networks:
+      - reporteria-network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+  # phpMyAdmin para administración de BD
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: reporteria-phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+    networks:
+      - reporteria-network
+    depends_on:
+      - db
+    restart: unless-stopped
+
+networks:
+  reporteria-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

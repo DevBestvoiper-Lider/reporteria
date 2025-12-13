@@ -21,10 +21,28 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
-conexion.php
 # Windows shortcuts
 *.lnk
 .idea
+
+# Docker
+mysql-data/
+*.php7backup
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Test files
+test.php
+check.php
+fix-php55.php
+
+# Logs
+*.log
+error.log
+access.log
 
 ##### Linux
 *~

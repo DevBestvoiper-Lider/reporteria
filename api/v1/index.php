@@ -8,7 +8,7 @@
 
 // Habilitar display de errores para debugging (cambiar a 0 en producción)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
 // Headers CORS y JSON
@@ -26,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Manejar errores con try-catch global
 try {
     // Cargar configuración y autoloader
-    require_once __DIR__ . '/../../vendor/autoload.php';
     require_once __DIR__ . '/../../models/conexion.php';
     require_once __DIR__ . '/config/config.php';
     require_once __DIR__ . '/middleware/auth.php';
@@ -70,8 +69,8 @@ try {
     $GLOBALS['uriParts'] = explode('/', $uri);
     $uriParts = $GLOBALS['uriParts'];
 
-    // Router principal (compatible PHP 5.5)
-    $endpoint = isset($uriParts[0]) ? $uriParts[0] : 'index';
+    // Router principal
+    $endpoint = $uriParts[0] ?? 'index';
 
     // Validar autenticación (excepto para login y documentación)
     if (!in_array($endpoint, ['auth', 'docs', 'index', ''])) {
@@ -141,6 +140,14 @@ try {
     
     Response::error(
         'Error interno del servidor: ' . $e->getMessage(), 
-        ($e->getCode() ? $e->getCode() : 500)
+        $e->getCode() ?: 500
+    );
+} catch (Error $e) {
+    // Capturar errores fatales (PHP 7+)
+    error_log('API Fatal Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+    
+    Response::error(
+        'Error crítico del servidor', 
+        500
     );
 }

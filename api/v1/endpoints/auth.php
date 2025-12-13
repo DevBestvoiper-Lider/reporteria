@@ -7,7 +7,7 @@
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uriParts = $GLOBALS['uriParts'];
-$action = isset($uriParts[1]) ? $uriParts[1] : null;
+$action = $uriParts[1] ?? null;
 
 switch ($action) {
     case 'login':
@@ -71,7 +71,7 @@ function handleLogin() {
                 'id' => $usuario['id'],
                 'nombre' => $usuario['nombre'],
                 'customeraccountname' => $usuario['customeraccountname'],
-                'perfil' => isset($usuario['perfil']) ? $usuario['perfil'] : null
+                'perfil' => $usuario['perfil'] ?? null
             ]
         ], 'Login exitoso');
 

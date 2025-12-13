@@ -1,0 +1,35 @@
+# Ignorar archivos de sistema
+.DS_Store
+Thumbs.db
+*.log
+
+# Ignorar archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignorar node_modules si se usa
+node_modules/
+
+# Ignorar archivos temporales de PHP
+*.php~
+*.cache
+
+# Ignorar backups
+*.backup
+*.bak
+*.php7backup
+
+# Ignorar archivos de entorno
+.env
+.env.local
+.env.production
+
+# Ignorar archivos de test
+test.php
+check.php
+fix-php55.php
+
+# Ignorar datos de Docker
+mysql-data/
