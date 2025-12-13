@@ -9,7 +9,7 @@
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uriParts = $GLOBALS['uriParts'];
-$action = $uriParts[1] ?? null;
+$action = isset($uriParts[1]) ? $uriParts[1] : null;
 
 // Obtener usuario autenticado
 $authUser = AuthMiddleware::getAuthenticatedUser();

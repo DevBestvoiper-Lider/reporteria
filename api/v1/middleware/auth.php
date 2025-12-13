@@ -4,6 +4,19 @@
  * Valida el token JWT en las peticiones
  */
 
+// Función getallheaders compatible con PHP 5.5 (para servidores sin la función nativa)
+if (!function_exists('getallheaders')) {
+    function getallheaders() {
+        $headers = array();
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+        return $headers;
+    }
+}
+
 class AuthMiddleware {
     
     /**
@@ -11,7 +24,7 @@ class AuthMiddleware {
      */
     public static function validateToken() {
         $headers = getallheaders();
-        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+        $authHeader = isset($headers['Authorization']) ? $headers['Authorization'] : (isset($headers['authorization']) ? $headers['authorization'] : null);
 
         if (!$authHeader) {
             Response::error('Token de autenticación no proporcionado', 401);
@@ -126,6 +139,6 @@ class AuthMiddleware {
      * Obtener datos del usuario autenticado
      */
     public static function getAuthenticatedUser() {
-        return $_SESSION['api_user'] ?? null;
+        return isset($_SESSION['api_user']) ? $_SESSION['api_user'] : null;
     }
 }

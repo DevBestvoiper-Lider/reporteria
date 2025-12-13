@@ -4,7 +4,8 @@
  */
 
 // Configuración JWT
-define('JWT_SECRET_KEY', getenv('JWT_SECRET_KEY') ?: 'd6c7a776148d0d84854481f2ae4a0a9e');
+$jwtSecret = getenv('JWT_SECRET_KEY');
+define('JWT_SECRET_KEY', $jwtSecret ? $jwtSecret : 'd6c7a776148d0d84854481f2ae4a0a9e');
 define('JWT_ALGORITHM', 'HS256');
 define('JWT_EXPIRATION', 86400); // 24 horas en segundos
 

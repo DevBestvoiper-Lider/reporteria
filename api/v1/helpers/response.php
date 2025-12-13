@@ -78,6 +78,6 @@ class Response {
             $data = $_POST;
         }
         
-        return $data ?: [];
+        return $data ? $data : array();
     }
 }

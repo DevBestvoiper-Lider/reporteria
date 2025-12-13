@@ -6,7 +6,7 @@
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uriParts = $GLOBALS['uriParts'];
-$action = $uriParts[1] ?? null;
+$action = isset($uriParts[1]) ? $uriParts[1] : null;
 
 // Obtener usuario autenticado
 $authUser = AuthMiddleware::getAuthenticatedUser();
@@ -91,7 +91,8 @@ function handleConsumoMonth($accountname) {
 
         // Ordenar por consumo descendente
         usort($linesData, function($a, $b) {
-            return $b['total_fee'] <=> $a['total_fee'];
+            if ($a['total_fee'] == $b['total_fee']) return 0;
+            return ($a['total_fee'] < $b['total_fee']) ? 1 : -1;
         });
 
         // Calcular tiempo total formateado

@@ -70,7 +70,7 @@ try {
     $uriParts = $GLOBALS['uriParts'];
 
     // Router principal
-    $endpoint = $uriParts[0] ?? 'index';
+    $endpoint = isset($uriParts[0]) ? $uriParts[0] : 'index';
 
     // Validar autenticación (excepto para login y documentación)
     if (!in_array($endpoint, ['auth', 'docs', 'index', ''])) {
@@ -138,16 +138,9 @@ try {
     // Log del error para debugging
     error_log('API Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
     
+    $errorCode = $e->getCode() ? $e->getCode() : 500;
     Response::error(
         'Error interno del servidor: ' . $e->getMessage(), 
-        $e->getCode() ?: 500
-    );
-} catch (Error $e) {
-    // Capturar errores fatales (PHP 7+)
-    error_log('API Fatal Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
-    
-    Response::error(
-        'Error crítico del servidor', 
-        500
+        $errorCode
     );
 }
