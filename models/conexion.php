@@ -18,15 +18,15 @@ class Conexion
         } elseif ($environment === 'production') {
             // Producción (servidor real)
             $host = getenv('DB_HOST') ?: 'localhost';
-            $dbname = getenv('DB_NAME') ?: 'vos3000';
-            $username = getenv('DB_USER') ?: 'root';
-            $password = getenv('DB_PASS') ?: 'd57hgtfresh3rdxy78D';
+            $dbname = getenv('DB_NAME') ?: '';
+            $username = getenv('DB_USER') ?: '';
+            $password = getenv('DB_PASS') ?: '';
         } else {
             // Desarrollo local
-            $host = getenv('DB_HOST') ?: 'sw1.bestvoiper.com';
-            $dbname = getenv('DB_NAME') ?: 'vos3000';
-            $username = getenv('DB_USER') ?: 'developers';
-            $password = getenv('DB_PASS') ?: 'Luisda0806*++';
+            $host = getenv('DB_HOST_DEV') ?: 'sw1.bestvoiper.com';
+            $dbname = getenv('DB_NAME_DEV') ?: '';
+            $username = getenv('DB_USER_DEV') ?: '';
+            $password = getenv('DB_PASS_DEV') ?: '';
         }
 
         $link = new PDO(
