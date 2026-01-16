@@ -32,6 +32,16 @@ $active = "Reporte Consumo Mensual";
         <label for="inputNumber" class="col-form-label">Fecha Fin</label>        
         <input type="date" name="FechaFin" value="<?php if(isset($_POST['FechaFin'])){echo $_POST['FechaFin']; }else {echo date('Y-m-d');}?>" id="" class="form-control">
     </div>
+    <div>
+        <label for="tipoTabla" class="col-form-label">Tipo de Reporte</label>        
+        <select name="tipoTabla" id="tipoTabla" class="form-select">
+            <option value="todas" <?php echo (isset($_POST['tipoTabla']) && $_POST['tipoTabla'] == 'todas') ? 'selected' : ''; ?>>📊 TODAS LAS TABLAS</option>
+            <option value="gatewaymapping" <?php echo (isset($_POST['tipoTabla']) && $_POST['tipoTabla'] == 'gatewaymapping') ? 'selected' : (!isset($_POST['tipoTabla']) ? 'selected' : ''); ?>>Gateway Mapping</option>
+            <option value="gatewayrouting" <?php echo (isset($_POST['tipoTabla']) && $_POST['tipoTabla'] == 'gatewayrouting') ? 'selected' : ''; ?>>Gateway Routing</option>
+            <option value="phone" <?php echo (isset($_POST['tipoTabla']) && $_POST['tipoTabla'] == 'phone') ? 'selected' : ''; ?>>Phone Fee</option>
+            <option value="customerclearinglocation" <?php echo (isset($_POST['tipoTabla']) && $_POST['tipoTabla'] == 'customerclearinglocation') ? 'selected' : ''; ?>>Customer Clearing Location Fee</option>
+        </select>
+    </div>
     <input type="hidden" name="archivo" id="accion" value="reportcdr">
     <div class="text-center">
         <button type="submit" class="btn btn-primary">Buscar</button>

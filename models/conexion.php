@@ -9,13 +9,13 @@ class Conexion
         
         if ($environment === 'production') {
             // Producción (servidor real)
-            $host = getenv('DB_HOST') ?: 'localhost';
+            $host = getenv('DB_HOST') ?: '127.0.0.1';
             $dbname = getenv('DB_NAME') ?: 'vos3000';
             $username = getenv('DB_USER') ?: 'root';
             $password = getenv('DB_PASS') ?: 'd57hgtfresh3rdxy78D';
         } else {
             // Desarrollo local
-            $host = getenv('DB_HOST_DEV') ?: 'sw1.bestvoiper.com';
+            $host = getenv('DB_HOST_DEV') ?: 'sw3.bestvoiper.com';
             $dbname = getenv('DB_NAME_DEV') ?: 'vos3000';
             $username = getenv('DB_USER_DEV') ?: '';
             $password = getenv('DB_PASS_DEV') ?: 'Luisda0806*++';

@@ -2,7 +2,7 @@
 
 class ModeloConsumption {
 
-    static public function MdlMostrarLlamadasCdrXDia($tabla, $item, $valor){
+    static public function MdlMostrarLlamadasCdrXDia($tabla, $item, $valor, $tieneGateway = true){
 
         if ($item != null) {
         
@@ -14,9 +14,14 @@ class ModeloConsumption {
             $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
         
             $report = array();
+
+            // Seleccionar columnas según el tipo de tabla
+            // Las tablas gateway tienen: gatewayid, ip, feetime, fee
+            // Las otras tablas solo tienen: feetime, fee (y otras columnas específicas)
+            $columnas = $tieneGateway ? "gatewayid, ip, feetime, fee" : "feetime, fee";
         
             foreach ($tables as $table) {
-                $stmt = Conexion::conectar()->prepare("SELECT gatewayid, ip, feetime, fee FROM `$table` WHERE $item = :valor");
+                $stmt = Conexion::conectar()->prepare("SELECT $columnas FROM `$table` WHERE $item = :valor");
                 $stmt->bindParam(":valor", $valor, PDO::PARAM_STR);
                 $stmt->execute();
         
@@ -30,6 +35,9 @@ class ModeloConsumption {
             $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
         
             $report = array();
+
+            // Seleccionar columnas según el tipo de tabla
+            $columnas = $tieneGateway ? "gatewayid, ip, feetime, fee" : "feetime, fee";
         
             foreach ($tables as $table) {
                 // Extraer la fecha de la tabla (últimos 8 caracteres del nombre)
@@ -37,8 +45,8 @@ class ModeloConsumption {
                 
                 // Comprobar si la fecha está dentro del rango
                 if ($table_date >= '20230301' && $table_date <= '20230831') {
-                    $sql = "SELECT callergatewayid, callerip, COUNT(*) AS cantidad FROM $table";
-                    $stmt = $conn->prepare($sql);
+                    $sql = "SELECT $columnas FROM $table";
+                    $stmt = Conexion::conectar()->prepare($sql);
                     $stmt->execute();
         
                    return $stmt -> fetchAll();
@@ -52,7 +60,7 @@ class ModeloConsumption {
         
         }
     
-    static public function MdlMostrarConsumoCdrMes($tabla, $item, $valor){
+    static public function MdlMostrarConsumoCdrMes($tabla, $item, $valor, $tieneGateway = true){
 
         if ($item != null) {
         
@@ -63,6 +71,11 @@ class ModeloConsumption {
             $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
         
             $report = array();
+
+            // Seleccionar columnas según el tipo de tabla
+            // Las tablas gateway tienen: gatewayid, ip, feetime, fee
+            // Las otras tablas solo tienen: feetime, fee
+            $columnas = $tieneGateway ? "gatewayid, ip, feetime, fee" : "feetime, fee";
 
             // Obtener fechas del POST o usar el mes actual como predeterminado
             if (isset($_POST['FechaInicio']) && !empty($_POST['FechaInicio'])){
@@ -80,7 +93,7 @@ class ModeloConsumption {
                 
                 // Comprobar si la fecha está dentro del rango
                 if ($table_date >= $fechaini && $table_date <= $fechafin) {
-                    $stmt = Conexion::conectar()->prepare("SELECT gatewayid, ip, feetime, fee FROM `$table` WHERE $item = :valor");
+                    $stmt = Conexion::conectar()->prepare("SELECT $columnas FROM `$table` WHERE $item = :valor");
                     $stmt->bindParam(":valor", $valor, PDO::PARAM_STR);
                     $stmt->execute();
         
@@ -95,6 +108,9 @@ class ModeloConsumption {
             $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
         
             $report = array();
+
+            // Seleccionar columnas según el tipo de tabla
+            $columnas = $tieneGateway ? "gatewayid, ip, feetime, fee" : "feetime, fee";
         
             foreach ($tables as $table) {
                 // Extraer la fecha de la tabla (últimos 8 caracteres del nombre)
@@ -102,8 +118,8 @@ class ModeloConsumption {
                 
                 // Comprobar si la fecha está dentro del rango
                 if ($table_date >= '20230301' && $table_date <= '20230831') {
-                    $sql = "SELECT callergatewayid, callerip, COUNT(*) AS cantidad FROM $table";
-                    $stmt = $conn->prepare($sql);
+                    $sql = "SELECT $columnas FROM $table";
+                    $stmt = Conexion::conectar()->prepare($sql);
                     $stmt->execute();
         
                    return $stmt -> fetchAll();

@@ -34,18 +34,61 @@ $valor = $accountname;
 
 $saldoactualformat = number_format($saldoactual, 0, ',', '.');
 
-$consumption = ControllersConsumption::ctrMostrarConsumoXMes($item, $valor);
+// Obtener tipo de tabla seleccionado (por defecto gatewaymapping)
+$tipoTabla = isset($_POST['tipoTabla']) ? $_POST['tipoTabla'] : 'gatewaymapping';
 
-$tuArray = $consumption;
+// Inicializar array de datos
+$dataArray = array();
 
-foreach ($tuArray as $fecha => $registros) {
-    foreach ($registros as $registro) {
-        $dataArray[] = array(
-            'ip' => $registro['ip'],
-            'gatewayid' => $registro['gatewayid'],
-            'feetime' => $registro['feetime'],
-            'fee' => $registro['fee'],
-        );
+// Si se selecciona "todas", consultar todas las tablas
+if($tipoTabla == 'todas'){
+    $consumptionTodas = ControllersConsumption::ctrMostrarConsumoXMesTodas($item, $valor);
+    
+    foreach ($consumptionTodas as $tipo => $info) {
+        $tieneGateway = $info['tieneGateway'];
+        foreach ($info['data'] as $fecha => $registros) {
+            foreach ($registros as $registro) {
+                $dataItem = array(
+                    'tipo' => $tipo,
+                    'feetime' => $registro['feetime'],
+                    'fee' => $registro['fee'],
+                );
+                if($tieneGateway){
+                    $dataItem['ip'] = $registro['ip'];
+                    $dataItem['gatewayid'] = $registro['gatewayid'];
+                } else {
+                    $dataItem['ip'] = $tipo; // Usar tipo como identificador
+                    $dataItem['gatewayid'] = $tipo;
+                }
+                $dataArray[] = $dataItem;
+            }
+        }
+    }
+} else {
+    // Verificar si el tipo de tabla tiene gatewayid
+    $tieneGatewayId = ControllersConsumption::ctrTieneGatewayId($tipoTabla);
+    
+    $consumption = ControllersConsumption::ctrMostrarConsumoXMes($item, $valor, $tipoTabla);
+
+    $tuArray = $consumption;
+
+    foreach ($tuArray as $fecha => $registros) {
+        foreach ($registros as $registro) {
+            $dataItem = array(
+                'tipo' => $tipoTabla,
+                'feetime' => $registro['feetime'],
+                'fee' => $registro['fee'],
+            );
+            // Solo agregar gatewayid e ip si la tabla lo tiene
+            if($tieneGatewayId){
+                $dataItem['ip'] = $registro['ip'];
+                $dataItem['gatewayid'] = $registro['gatewayid'];
+            } else {
+                $dataItem['ip'] = $tipoTabla; // Usar tipo como identificador
+                $dataItem['gatewayid'] = $tipoTabla;
+            }
+            $dataArray[] = $dataItem;
+        }
     }
 }
 

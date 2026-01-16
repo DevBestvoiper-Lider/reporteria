@@ -71,6 +71,7 @@ Icon
 # Thumbnails
 ._*
 .htaccess
+*.htaccess
 
 # Files that might appear in the root of a volume
 .DocumentRevisions-V100
