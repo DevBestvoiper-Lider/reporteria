@@ -191,12 +191,12 @@ if(isset($dataArray)){
     foreach ($dataArray as $row) {
 
          
-        $sum_holdtime += @$row['feetime'];
-        $feetime = abs(@$row['feetime']);
-        $fee2 = abs(@$row['fee']);
+        $sum_holdtime += $row['feetime'] ?? 0;
+        $feetime = abs($row['feetime'] ?? 0);
+        $fee2 = abs($row['fee'] ?? 0);
 
         $feeconsum[] = $fee2;
-        $ipgateway[] = @$row['ip'];
+        $ipgateway[] = $row['ip'] ?? '';
         $feetimes[] = $feetime;
 }
 }
