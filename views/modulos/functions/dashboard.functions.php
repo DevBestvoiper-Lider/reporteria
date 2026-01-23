@@ -125,9 +125,13 @@ $valorEsteMes = $totalEsteMes;
 
 $diferencia2 = $valorEsteMes - $valorAntMes;
 
-$porcentaje2 = ($diferencia2 / $valorAntMes) * 100;
+if ($valorAntMes != 0) {
+    $porcentaje2 = ($diferencia2 / $valorAntMes) * 100;
+} else {
+    $porcentaje2 = 0;
+}
 
-
+$porcentajeSetMes = "0%";
 if ($diferencia2 > 0) {
     $porcentajeSetMes = round($porcentaje2, 2) . "%";
 } elseif ($diferencia2 < 0) {
