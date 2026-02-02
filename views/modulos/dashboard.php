@@ -261,7 +261,7 @@
                                                         $timestamp = $data['time'] / 1000; // Convertir a segundos
                                                         $colombiaOffset = -7 * 3600; // Offset en segundos (5 horas atrás)
                                                         
-                                                        $timestampColombia = $timestamp + $colombiaOffset;
+                                                        $timestampColombia = (int)($timestamp + $colombiaOffset);
                                                         
                                                         $starttime = date("Y-m-d H:i:s", $timestampColombia);
 
