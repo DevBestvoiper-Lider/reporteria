@@ -23,7 +23,7 @@ ini_set('max_execution_time', 0); // sin límite de tiempo
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <title>BestVoiper Reports</title>
+  <title>Colombia Red Reports</title>
 
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">

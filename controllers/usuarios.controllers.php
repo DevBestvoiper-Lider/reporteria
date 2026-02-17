@@ -6,18 +6,15 @@ class ControllersUsuarios{
 
     static publiC function ctrIngresoUsuario(){
 
-        if(isset($_POST["ingUsuario"])){
+        if(isset($_POST["ingUsuario"]) && !empty($_POST["ingUsuario"]) && !empty($_POST["ingPassword"])){
 
-            if (preg_match('/^[-a-zA-Z0-9\s]+$/', $_POST["ingUsuario"])){
-
-                $encrypt = crypt ($_POST["ingPassword"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
                 $tabla = "e_usuariosclientes";
                 $item = "usuario";
                 $valor = $_POST["ingUsuario"];
     
                 $respuesta = ModeloUsuarios::MdlMostrarUsuarios( $tabla, $item, $valor);
 
-                if(@$respuesta["usuario"] == @$_POST["ingUsuario"] && @$respuesta["password"] == $encrypt){
+                if($respuesta && password_verify($_POST["ingPassword"], $respuesta["password"])){
 
                     $_SESSION["iniciarsession"] = "ok";
                     $_SESSION["id"] = $respuesta["id"];
@@ -45,7 +42,7 @@ class ControllersUsuarios{
 
                     $ultimoLogin = ModeloUsuarios::mdlActualizarUsuario($tabla, $item1, $valor1, $item2, $valor2);
 
-                    if ($ultimoLogin = "ok"){
+                    if ($ultimoLogin == "ok"){
                         echo '<script>
                     
                         window.location = "dashboard";
@@ -56,23 +53,23 @@ class ControllersUsuarios{
                 }else {
                     echo '<script>
                     
-                    swal.fire ({
-                        icon: "error",
-                        title: "¡ERROR! contraseña Y/O usuario incorrecto",
-                        showConfirmButton: true,
-                        confirmButtonText: "cerrar",
-                        closeOnConfirm: false
-    
-                    }).then((result)=>{
-                        window.location = "dashboard";
-                    
+                    document.addEventListener("DOMContentLoaded", function() {
+                        Swal.fire ({
+                            icon: "error",
+                            title: "¡ERROR! contraseña Y/O usuario incorrecto",
+                            showConfirmButton: true,
+                            confirmButtonText: "cerrar",
+                            closeOnConfirm: false
+        
+                        }).then((result)=>{
+                            window.location = "index.php";
+                        
+                        });
                     });
     
                     </script>';
     
                 }
-
-            }
 
         }
 
@@ -88,7 +85,7 @@ class ControllersUsuarios{
 
                     ############ VALIDAR IMAGEN ############
 
-                    $encrypt = crypt ($_POST["nuevoPassword"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
+                    $encrypt = password_hash($_POST["nuevoPassword"], PASSWORD_DEFAULT);
                     $tabla = "e_usuariosclientes";
                     
                     $datos = array("nombre" => $_POST["nuevoNombre"],
@@ -172,8 +169,8 @@ class ControllersUsuarios{
 
                 if ($_POST["editarPassword"] != ""){
 
-                    if (preg_match('/^[-a-zA-Z0-9]+$/', $_POST["editarPassword"])){
-                        $encrypt = crypt($_POST["editarPassword"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
+                    if (!empty($_POST["editarPassword"])){
+                        $encrypt = password_hash($_POST["editarPassword"], PASSWORD_DEFAULT);
                     }else {
 
                         echo '<script>
@@ -306,7 +303,7 @@ static public function ctrActualizarPassword(){
             if ($_POST["CambiarPassword"] == $_POST["contraseña1"]){
 
                 if (isset($_POST["CambiarPassword"])){
-                    $encrypt = crypt($_POST["CambiarPassword"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
+                    $encrypt = password_hash($_POST["CambiarPassword"], PASSWORD_DEFAULT);
 
                     $datos = array("usuario" => $_SESSION["usuario"], 
                             "password" => $encrypt);

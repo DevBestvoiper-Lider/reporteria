@@ -15,7 +15,7 @@ class Conexion
             $password = getenv('DB_PASS') ?: 'd57hgtfresh3rdxy78D';
         } else {
             // Desarrollo local
-            $host = getenv('DB_HOST_DEV') ?: 'sw3.bestvoiper.com';
+            $host = getenv('DB_HOST_DEV') ?: 'colombus.bestvoiper.com';
             $dbname = getenv('DB_NAME_DEV') ?: 'vos3000';
             $username = getenv('DB_USER_DEV') ?: '';
             $password = getenv('DB_PASS_DEV') ?: 'Luisda0806*++';
