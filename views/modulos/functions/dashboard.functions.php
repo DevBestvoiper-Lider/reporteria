@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../../../helpers/NumberHelper.php';
 
 $active = "Dashboard";
 
@@ -27,7 +28,7 @@ $consumohoysinformat = $dashboard['todayconsumption'];
 
 $saldoactual = $dashboard['money'];
 
-$consumohoyformat = number_format(abs($consumohoysinformat), 0, ',', '.');
+$consumohoyformat = NumberHelper::formatFeeClean(abs($consumohoysinformat));
 
 $saldoactualformat = number_format($saldoactual, 0, ',', '.');
 
@@ -80,7 +81,7 @@ foreach ($tuArray as $subarray) {
     foreach ($subarray as $key) {
         if (isset($key['fee'])) {
             @$totalFeeMes += @$key['fee'];
-            $feesFormat = number_format(abs($key['fee']), 0, ',', '.');
+            $feesFormat = NumberHelper::formatFeeClean(abs($key['fee']));
             $feesArray[] = $feesFormat;
         }
     }
@@ -102,7 +103,7 @@ foreach ($tuArray as $subarray) {
 // array_push($feesArray, $consumohoyformat);
 // array_push($datesArray, date('Y-m-d'));
 
-$consumoEsteMesFormat = number_format(abs($totalEsteMes), 0, ',', '.'); // formateamos el consumo mensual
+$consumoEsteMesFormat = NumberHelper::formatFeeClean(abs($totalEsteMes)); // formateamos el consumo mensual
 
 // este codigo nos ayudara a comparar el cosumo del consumo del mes anterior con el actual para asi mostrar el porcentaje.
 
@@ -271,7 +272,7 @@ if(isset($dataArray2)){
         foreach ($dataArray2 as $row) {
             $Consumfee2 += abs(@$row['fee']);
 
-            $Consumfee2format = number_format($Consumfee2, 0, ',', '.');
+            $Consumfee2format = NumberHelper::formatFeeClean($Consumfee2);
 
             $areacode = @$row['callerareacode'];
 

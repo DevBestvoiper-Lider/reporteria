@@ -197,7 +197,7 @@ include_once 'functions/reportcdr.functions.php';
                                             <td>' . $starttime . '</td>
                                             <td>' . $data['holdtime'] . '</td>
                                             <td>' . $data['endreason'] . '</td>
-                                            <td>$ ' . $data['fee'] . '</td>
+                                            <td>$ ' . NumberHelper::formatFeeClean($data['fee']) . '</td>
                                             </tr>';
                                         }
                                     }

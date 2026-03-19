@@ -305,7 +305,7 @@ include_once 'functions/consumption.functions.php';
                     $minutos = floor($sum_holdtime / 60); // Calcula los minutos completos
                     $sum_holdtime %= 60; // Obtiene los segundos restantes
 
-                    $fee = number_format($row['fee'], 0, ',', '.');
+                    $fee = NumberHelper::formatFeeClean($row['fee']);
 
                     $formathor = $horas . ":" . $minutos . ":" . $sum_holdtime;
 
@@ -318,7 +318,7 @@ include_once 'functions/consumption.functions.php';
                     </tr>';
             }
 
-            $numeroFormateadoTotal = number_format($consumototal, 0, ',', '.');
+            $numeroFormateadoTotal = NumberHelper::formatFeeClean($consumototal);
 
             echo '<tr scope="col"><td></td>
             <td></td>

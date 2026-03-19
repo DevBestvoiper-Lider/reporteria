@@ -308,7 +308,7 @@ $active = "Reporte Consumo Mensual";
                                   $sum_holdtime = $data['sum_holdtime'];
                                   $sum_fee = $data['sum_fee'];
 
-                                  $numeroFormateado = number_format(abs($sum_fee), 0, ',', '.');
+                                  $numeroFormateado = NumberHelper::formatFeeClean(abs($sum_fee));
 
                                   $horas = floor($sum_holdtime / 3600); // Calcula las horas completas
                                   $sum_holdtime %= 3600; // Obtiene los segundos restantes
@@ -331,7 +331,7 @@ $active = "Reporte Consumo Mensual";
                               }
                           }
 
-                          $consumototalformat = number_format(abs($consumototal), 0, ',', '.');
+                          $consumototalformat = NumberHelper::formatFeeClean(abs($consumototal));
                           
                           echo '<tr scope="col"><td></td>
                           <td></td>

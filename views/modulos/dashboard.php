@@ -191,7 +191,7 @@
 
                                                         $sum_feeTotal = $data['sum_fee'];
 
-                                                        $numeroFormateado = number_format($sum_fee, 2);
+                                                        $numeroFormateado = NumberHelper::formatFeeClean($sum_fee);
 
                                                         echo '<tr>
                                                         <td>' . $ip . '</td>
@@ -207,7 +207,7 @@
                                                     }
                                                 }
 
-                                                $consumototalFormat = number_format($consumototal, 2, ',', '.');
+                                                $consumototalFormat = NumberHelper::formatFeeClean($consumototal);
                                                 
                                                 echo '<tr scope="col"><td></td>
                                                 <td></td>

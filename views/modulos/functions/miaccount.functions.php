@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../../helpers/NumberHelper.php';
+
 $active = "Mi Perfil";
 
 $accountname = $_SESSION['customeraccountname'];

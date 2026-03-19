@@ -3,6 +3,8 @@ ini_set('memory_limit', '-1');
 set_time_limit(0);
 ob_start();
 
+require_once __DIR__ . '/../../../helpers/NumberHelper.php';
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -224,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
         $areacode = getAreaCodeLocation(isset($registro['callerareacode']) ? $registro['callerareacode'] : '');
         $timestampColombia = (int)($registro['starttime'] / 1000); // Convertir a entero para evitar el warning
         $starttime = date("Y-m-d H:i:s", $timestampColombia);
-        $feeFormatted = number_format($registro['fee'], 2, ',', '');
+        $feeFormatted = NumberHelper::formatFeeClean($registro['fee']);
         
         $linea = "{$registro['calleraccesse164']};{$registro['callertogatewaye164']};{$registro['calleee164']};{$areacode};{$registro['callergatewayid']};{$registro['callerip']};{$starttime};{$registro['holdtime']};{$endreason};{$feeFormatted};\n";
         fwrite($fh, $linea);
@@ -476,7 +478,7 @@ if (isset($_POST['exportarMonth'])) {
             $holdtime = $data['sum_holdtime'];
             $sum_fee = $data['sum_fee'];
 
-            $numeroFormateado = number_format(abs($sum_fee), 0, ',', '.');
+            $numeroFormateado = NumberHelper::formatFeeClean(abs($sum_fee));
 
             $horas = floor($sum_holdtime / 3600); // Calcula las horas completas
             $sum_holdtime %= 3600; // Obtiene los segundos restantes
@@ -640,7 +642,7 @@ if (isset($_POST['exportarDay'])) {
             $holdtime = $data['sum_holdtime'];
             $sum_fee = $data['sum_fee'];
 
-            $numeroFormateado = number_format(abs($sum_fee), 0, ',', '.');
+            $numeroFormateado = NumberHelper::formatFeeClean(abs($sum_fee));
 
             $horas = floor($sum_holdtime / 3600); // Calcula las horas completas
             $sum_holdtime %= 3600; // Obtiene los segundos restantes

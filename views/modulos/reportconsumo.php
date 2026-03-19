@@ -203,7 +203,7 @@ include_once 'functions/reportconsumo.functions.php';
                         $minutos = floor($resto / 60);
                         $segundos = $resto % 60;
 
-                        $fee = number_format($row['fee'], 0, ',', '.');
+                        $fee = NumberHelper::formatFeeClean($row['fee']);
                         $formathor = $horas . ":" . $minutos . ":" . $segundos;
 
                         echo '<tr>

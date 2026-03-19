@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../../helpers/NumberHelper.php';
+
 $active = "Reporte Consumo Diario";
 
 $item = 'nombre';
@@ -126,4 +128,4 @@ $sum_holdtime %= 60; // Obtiene los segundos restantes
 
 $formathor2 = $horas . ":" . $minutos . ":" . $sum_holdtime;
 
-$numeroFormateadoTotal2 = number_format($consumototal, 0, ',', '.');
+$numeroFormateadoTotal2 = NumberHelper::formatFeeClean($consumototal);

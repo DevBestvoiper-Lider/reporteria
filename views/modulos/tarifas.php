@@ -38,7 +38,7 @@ $active = "Tarifas y Prefijos";
                                         echo '<tr>
                                         <td>'.$value["areaname"].'</td>
                                         <td>'.$value["prefix"]."</td>
-                                        <td>$ ".$value["rate(minute)"]."</td>
+                                        <td>$ ".NumberHelper::formatFeeClean($value["rate(minute)"])."</td>
                                         <td>".$value["memo"].'</td>
                                         </tr>';
                                     }

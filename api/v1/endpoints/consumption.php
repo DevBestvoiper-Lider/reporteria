@@ -5,6 +5,8 @@
  * GET /api/v1/consumption/month - Consumo mensual
  */
 
+require_once __DIR__ . '/../../../helpers/NumberHelper.php';
+
 $method = $_SERVER['REQUEST_METHOD'];
 $uriParts = $GLOBALS['uriParts'];
 $action = isset($uriParts[1]) ? $uriParts[1] : null;
@@ -78,8 +80,8 @@ function handleDay($accountname) {
                         'gatewayid' => $registro['gatewayid'],
                         'feetime' => $feetime,
                         'feetime_formatted' => gmdate("H:i:s", $feetime),
-                        'fee' => $fee,
-                        'fee_formatted' => number_format($fee, 0, ',', '.')
+                        'fee' => NumberHelper::fromScientific($fee),
+                        'fee_formatted' => NumberHelper::formatFeeClean($fee)
                     ];
                 }
             }
@@ -94,8 +96,8 @@ function handleDay($accountname) {
 
         Response::success([
             'date' => $fecha,
-            'total_consumption' => $consumoTotal,
-            'total_consumption_formatted' => number_format($consumoTotal, 0, ',', '.'),
+            'total_consumption' => NumberHelper::fromScientific($consumoTotal),
+            'total_consumption_formatted' => NumberHelper::formatFeeClean($consumoTotal),
             'total_time' => $sumHoldtime + ($horas * 3600) + ($minutos * 60),
             'total_time_formatted' => $formatHor,
             'total_calls' => count($dataArray),
@@ -154,8 +156,8 @@ function handleMonthConsumption($accountname) {
                         'gatewayid' => $registro['gatewayid'],
                         'feetime' => $feetime,
                         'feetime_formatted' => gmdate("H:i:s", $feetime),
-                        'fee' => $fee,
-                        'fee_formatted' => number_format($fee, 0, ',', '.')
+                        'fee' => NumberHelper::fromScientific($fee),
+                        'fee_formatted' => NumberHelper::formatFeeClean($fee)
                     ];
                 }
             }
@@ -171,8 +173,8 @@ function handleMonthConsumption($accountname) {
         Response::success([
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'total_consumption' => $consumoTotal,
-            'total_consumption_formatted' => number_format($consumoTotal, 0, ',', '.'),
+            'total_consumption' => NumberHelper::fromScientific($consumoTotal),
+            'total_consumption_formatted' => NumberHelper::formatFeeClean($consumoTotal),
             'total_time' => $sumHoldtime + ($horas * 3600) + ($minutos * 60),
             'total_time_formatted' => $formatHor,
             'total_calls' => count($dataArray),
