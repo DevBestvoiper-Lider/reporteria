@@ -38,6 +38,8 @@ if(isset($miaccount)){
         $areacode = $subarray['areacode'];
         $fee = $subarray['fee'];
         $period = $subarray['period'];
+        $areaname = '';
+        $memo = '';
     
         foreach ($miaccount2 as $subarray2){
             if (@$subarray2['areacode'] == $areacode){
