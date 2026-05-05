@@ -82,6 +82,8 @@ function handleCdrMonth($accountname) {
                                 }
                             }
                             break;
+                        } else {
+                            $endreason = isset($registro['endreason']) ? $registro['endreason'] : 'Server';
                         }
                     }
                 }
