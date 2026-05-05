@@ -81,6 +81,14 @@ class ModeloPayHistory{
 
         if ($item != null) {
 
+                $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE :tabla");
+                $stmt->bindParam(":tabla", $tabla, PDO::PARAM_STR);
+                $stmt->execute();
+
+                if ($stmt->fetchColumn() === false) {
+                    return array();
+                }
+
                 $sql = "SELECT customeraccount, paymoney, memo, loginname, customermoney, time FROM $tabla WHERE";
 
                 $sql .= " $item = :$item LIMIT 4";

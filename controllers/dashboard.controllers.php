@@ -82,9 +82,9 @@ class ControllersDashboard{
 
     static public function ctrMostrarLlamadasCdrMes($item, $valor){
 
-        $dia01 = date('Ym').'01';
-
         $dia01 = date('Ym').'03';
+
+        $dia = sprintf("%02d", (date('d')));
 
         if (date('Ymd') != $dia01) {
             $dia = sprintf("%02d", (date('d')));

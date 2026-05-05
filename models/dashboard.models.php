@@ -29,6 +29,14 @@
 
             if ($item != null) {
 
+                $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE :tabla");
+                $stmt->bindParam(":tabla", $tabla, PDO::PARAM_STR);
+                $stmt->execute();
+
+                if ($stmt->fetchColumn() === false) {
+                    return array('fee' => 0);
+                }
+
                 $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :$item");
                 $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
                 $stmt -> execute();

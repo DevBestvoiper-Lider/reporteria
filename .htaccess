@@ -13,7 +13,7 @@ SetEnv DB_USER "root"
 SetEnv DB_PASS "d57hgtfresh3rdxy78D"
 
 # ===== CREDENCIALES DE BASE DE DATOS DEV =====
-SetEnv DB_HOST_DEV "colombus.bestvoiper.com"
+SetEnv DB_HOST_DEV "sw3.bestvoiper.com"
 SetEnv DB_NAME_DEV "vos3000"
 SetEnv DB_USER_DEV "developers"
 SetEnv DB_PASS_DEV "Luisda0806*++"
