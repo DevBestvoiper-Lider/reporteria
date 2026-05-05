@@ -80,26 +80,19 @@ class ModeloPayHistory{
     static public function ctrMostrarUltimPay($tabla, $item, $valor){
 
         if ($item != null) {
+                try {
+                    $sql = "SELECT customeraccount, paymoney, memo, loginname, customermoney, time FROM $tabla WHERE";
+                    $sql .= " $item = :$item LIMIT 4";
+                    $sql = rtrim($sql, " AND");
 
-                $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE :tabla");
-                $stmt->bindParam(":tabla", $tabla, PDO::PARAM_STR);
-                $stmt->execute();
+                    $stmt = Conexion::conectar()->prepare($sql);
+                    $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
+                    $stmt -> execute();
 
-                if ($stmt->fetchColumn() === false) {
+                    return $stmt->fetchAll();
+                } catch (PDOException $e) {
                     return array();
                 }
-
-                $sql = "SELECT customeraccount, paymoney, memo, loginname, customermoney, time FROM $tabla WHERE";
-
-                $sql .= " $item = :$item LIMIT 4";
-
-                $sql = rtrim($sql, " AND");
-
-                $stmt = Conexion::conectar()->prepare($sql);
-                $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
-                $stmt -> execute();
-
-                return $stmt->fetchAll();
 
         }else {
             $stmt = Conexion::conectar()->prepare("SHOW TABLES LIKE $tabla");

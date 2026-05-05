@@ -45,10 +45,9 @@ class ControllersDashboard{
 
     static public function ctrMostrarDatosMesAnt($item, $valor){
 
-        $ano = date('Y');
-
-        $restmes = (date('m') - 1);
-        $mes = sprintf("%02d", $restmes);
+        $prev = new DateTime('first day of last month');
+        $ano = $prev->format('Y');
+        $mes = $prev->format('m');
 
         $tabla = "e_reportcustomerfee_".$ano.$mes."%";
 
