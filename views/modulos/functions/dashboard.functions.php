@@ -6,13 +6,14 @@ $active = "Dashboard";
 
 // el siguiente script nos ayuda a obtener el customeraccountname del usuario actual para traer la data
 
-$item = 'nombre';
+$accountname = $_SESSION["customeraccountname"] ?? '';
 
-$valor = $_SESSION["nombre"];
-
-$usuarios = ControllersUsuarios::ctrMostrarUsuarios($item, $valor);
-
-$accountname = $usuarios['customeraccountname'];
+if ($accountname === '' && !empty($_SESSION["nombre"])) {
+    $item = 'nombre';
+    $valor = $_SESSION["nombre"];
+    $usuarios = ControllersUsuarios::ctrMostrarUsuarios($item, $valor);
+    $accountname = $usuarios['customeraccountname'] ?? '';
+}
 
 ######################## DASHBOARD ###############################
 
@@ -24,9 +25,10 @@ $valor = $accountname;
 
 $dashboard = ControllersDashboard::ctrMostrarDatosHoy($item, $valor);
 
-$consumohoysinformat = $dashboard['todayconsumption'];
 
-$saldoactual = $dashboard['money'];
+$consumohoysinformat = (float)($dashboard['todayconsumption'] ?? 0);
+
+$saldoactual = (float)($dashboard['money'] ?? 0);
 
 $consumohoyformat = NumberHelper::formatFeeClean(abs($consumohoysinformat));
 
