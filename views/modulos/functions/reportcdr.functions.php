@@ -45,7 +45,7 @@ if (isset($reportcdr) && is_array($reportcdr) && !empty($reportcdr)) {
                     }
                     break; // Salir del loop una vez encontrado
                 } else {
-                    $endreason = isset($registro['endreason']) ? $registro['endreason'] : 'Server';
+                    $endreason = 'Server';
                 }
             }
         }
