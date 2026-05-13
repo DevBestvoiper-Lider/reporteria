@@ -37,7 +37,7 @@ class ControllersConsumption{
         $tabla = self::$tiposTabla[$tipoTabla].$dia;
         $tieneGateway = self::ctrTieneGatewayId($tipoTabla);
 
-        $respuesta = ModeloConsumption::MdlMostrarLlamadasCdrXDia($tabla, $item, $valor, $tieneGateway);
+        $respuesta = ModeloConsumption::MdlMostrarLlamadasCdrXDia($tabla, $item, $valor, $tieneGateway, $tipoTabla);
 
         return $respuesta;
     }
@@ -52,7 +52,7 @@ class ControllersConsumption{
         $tabla = self::$tiposTabla[$tipoTabla]."%";
         $tieneGateway = self::ctrTieneGatewayId($tipoTabla);
 
-        $respuesta = ModeloConsumption::MdlMostrarConsumoCdrMes($tabla, $item, $valor, $tieneGateway);
+        $respuesta = ModeloConsumption::MdlMostrarConsumoCdrMes($tabla, $item, $valor, $tieneGateway, $tipoTabla);
 
         return $respuesta;
     }

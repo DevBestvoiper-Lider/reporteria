@@ -2,7 +2,27 @@
 
 class ModeloConsumption {
 
-    static public function MdlMostrarLlamadasCdrXDia($tabla, $item, $valor, $tieneGateway = true){
+    /**
+     * Determinar si una tabla es del día actual y está vacía
+     * En ese caso, usar e_cdr_YYYYMMDD en tiempo real
+     */
+    static private function debeUsarCDR($nombreTabla){
+        // Extraer la fecha de la tabla (últimos 8 caracteres)
+        $fechaTabla = substr($nombreTabla, -8);
+        $fechaHoy = date('Ymd');
+        
+        return ($fechaTabla === $fechaHoy);
+    }
+
+    /**
+     * Obtener el nombre de la tabla CDR correspondiente
+     */
+    static private function obtenerTablaCDR($nombreTablaReporte){
+        $fecha = substr($nombreTablaReporte, -8);
+        return "e_cdr_" . $fecha;
+    }
+
+    static public function MdlMostrarLlamadasCdrXDia($tabla, $item, $valor, $tieneGateway = true, $tipoTabla = 'gatewaymapping'){
 
         if ($item != null) {
         
@@ -16,16 +36,67 @@ class ModeloConsumption {
             $report = array();
 
             // Seleccionar columnas según el tipo de tabla
-            // Las tablas gateway tienen: gatewayid, ip, feetime, fee
-            // Las otras tablas solo tienen: feetime, fee (y otras columnas específicas)
-            $columnas = $tieneGateway ? "gatewayid, ip, feetime, fee" : "feetime, fee";
+            if ($tieneGateway) {
+                $columnas = "gatewayid, ip, feetime, fee";
+            } elseif ($tipoTabla === 'phone') {
+                $columnas = "e164, feetime, fee";
+            } elseif ($tipoTabla === 'customerclearinglocation') {
+                $columnas = "areacode, feetime, fee";
+            } else {
+                $columnas = "feetime, fee";
+            }
         
             foreach ($tables as $table) {
-                $stmt = Conexion::conectar()->prepare("SELECT $columnas FROM `$table` WHERE $item = :valor");
-                $stmt->bindParam(":valor", $valor, PDO::PARAM_STR);
-                $stmt->execute();
-        
-                $report[$table] = $stmt->fetchAll();
+                // Verificar si debemos usar e_cdr en lugar de la tabla de reportes
+                if (self::debeUsarCDR($table)) {
+                    $tablaCDR = self::obtenerTablaCDR($table);
+                    
+                    // Verificar que la tabla CDR existe
+                    $stmtCheck = Conexion::conectar()->prepare("SHOW TABLES LIKE :tablaCDR");
+                    $stmtCheck->bindParam(':tablaCDR', $tablaCDR, PDO::PARAM_STR);
+                    $stmtCheck->execute();
+                    
+                    if ($stmtCheck->rowCount() > 0) {
+                        // Mapear campos de e_cdr a formato de reportes según tipo de tabla
+                        if ($tieneGateway) {
+                            // gatewaymapping, gatewayrouting
+                            $columnasCDR = "callergatewayid AS gatewayid, callerip AS ip, SUM(feetime) AS feetime, SUM(fee) AS fee";
+                            $groupBy = "GROUP BY callergatewayid, callerip";
+                        } elseif ($tipoTabla === 'phone') {
+                            // phone: agrupa por e164
+                            $columnasCDR = "calleee164 AS e164, SUM(feetime) AS feetime, SUM(fee) AS fee";
+                            $groupBy = "GROUP BY calleee164";
+                        } elseif ($tipoTabla === 'customerclearinglocation') {
+                            // customerclearinglocation: agrupa por areacode
+                            $columnasCDR = "calleeareacode AS areacode, SUM(feetime) AS feetime, SUM(fee) AS fee";
+                            $groupBy = "GROUP BY calleeareacode";
+                        } else {
+                            // Otros tipos: solo totales
+                            $columnasCDR = "SUM(feetime) AS feetime, SUM(fee) AS fee";
+                            $groupBy = "";
+                        }
+                        
+                        $stmt = Conexion::conectar()->prepare("SELECT $columnasCDR FROM `$tablaCDR` WHERE customeraccount = :valor $groupBy");
+                        $stmt->bindParam(":valor", $valor, PDO::PARAM_STR);
+                        $stmt->execute();
+                        
+                        $report[$table] = $stmt->fetchAll();
+                    } else {
+                        // Si no existe tabla CDR, usar tabla de reportes vacía
+                        $stmt = Conexion::conectar()->prepare("SELECT $columnas FROM `$table` WHERE $item = :valor");
+                        $stmt->bindParam(":valor", $valor, PDO::PARAM_STR);
+                        $stmt->execute();
+                        
+                        $report[$table] = $stmt->fetchAll();
+                    }
+                } else {
+                    // Usar tabla de reportes normal
+                    $stmt = Conexion::conectar()->prepare("SELECT $columnas FROM `$table` WHERE $item = :valor");
+                    $stmt->bindParam(":valor", $valor, PDO::PARAM_STR);
+                    $stmt->execute();
+            
+                    $report[$table] = $stmt->fetchAll();
+                }
             }
             return $report;
         }else {
@@ -37,7 +108,15 @@ class ModeloConsumption {
             $report = array();
 
             // Seleccionar columnas según el tipo de tabla
-            $columnas = $tieneGateway ? "gatewayid, ip, feetime, fee" : "feetime, fee";
+            if ($tieneGateway) {
+                $columnas = "gatewayid, ip, feetime, fee";
+            } elseif ($tipoTabla === 'phone') {
+                $columnas = "e164, feetime, fee";
+            } elseif ($tipoTabla === 'customerclearinglocation') {
+                $columnas = "areacode, feetime, fee";
+            } else {
+                $columnas = "feetime, fee";
+            }
         
             foreach ($tables as $table) {
                 // Extraer la fecha de la tabla (últimos 8 caracteres del nombre)
@@ -60,7 +139,7 @@ class ModeloConsumption {
         
         }
     
-    static public function MdlMostrarConsumoCdrMes($tabla, $item, $valor, $tieneGateway = true){
+    static public function MdlMostrarConsumoCdrMes($tabla, $item, $valor, $tieneGateway = true, $tipoTabla = 'gatewaymapping'){
 
         if ($item != null) {
         
@@ -73,9 +152,15 @@ class ModeloConsumption {
             $report = array();
 
             // Seleccionar columnas según el tipo de tabla
-            // Las tablas gateway tienen: gatewayid, ip, feetime, fee
-            // Las otras tablas solo tienen: feetime, fee
-            $columnas = $tieneGateway ? "gatewayid, ip, feetime, fee" : "feetime, fee";
+            if ($tieneGateway) {
+                $columnas = "gatewayid, ip, feetime, fee";
+            } elseif ($tipoTabla === 'phone') {
+                $columnas = "e164, feetime, fee";
+            } elseif ($tipoTabla === 'customerclearinglocation') {
+                $columnas = "areacode, feetime, fee";
+            } else {
+                $columnas = "feetime, fee";
+            }
 
             // Obtener fechas del POST o usar el mes actual como predeterminado
             if (isset($_POST['FechaInicio']) && !empty($_POST['FechaInicio'])){
@@ -93,11 +178,57 @@ class ModeloConsumption {
                 
                 // Comprobar si la fecha está dentro del rango
                 if ($table_date >= $fechaini && $table_date <= $fechafin) {
-                    $stmt = Conexion::conectar()->prepare("SELECT $columnas FROM `$table` WHERE $item = :valor");
-                    $stmt->bindParam(":valor", $valor, PDO::PARAM_STR);
-                    $stmt->execute();
-        
-                    $report[$table] = $stmt->fetchAll();
+                    
+                    // Verificar si debemos usar e_cdr en lugar de la tabla de reportes
+                    if (self::debeUsarCDR($table)) {
+                        $tablaCDR = self::obtenerTablaCDR($table);
+                        
+                        // Verificar que la tabla CDR existe
+                        $stmtCheck = Conexion::conectar()->prepare("SHOW TABLES LIKE :tablaCDR");
+                        $stmtCheck->bindParam(':tablaCDR', $tablaCDR, PDO::PARAM_STR);
+                        $stmtCheck->execute();
+                        
+                        if ($stmtCheck->rowCount() > 0) {
+                            // Mapear campos de e_cdr a formato de reportes según tipo de tabla
+                            if ($tieneGateway) {
+                                // gatewaymapping, gatewayrouting
+                                $columnasCDR = "callergatewayid AS gatewayid, callerip AS ip, SUM(feetime) AS feetime, SUM(fee) AS fee";
+                                $groupBy = "GROUP BY callergatewayid, callerip";
+                            } elseif ($tipoTabla === 'phone') {
+                                // phone: agrupa por e164
+                                $columnasCDR = "calleee164 AS e164, SUM(feetime) AS feetime, SUM(fee) AS fee";
+                                $groupBy = "GROUP BY calleee164";
+                            } elseif ($tipoTabla === 'customerclearinglocation') {
+                                // customerclearinglocation: agrupa por areacode
+                                $columnasCDR = "calleeareacode AS areacode, SUM(feetime) AS feetime, SUM(fee) AS fee";
+                                $groupBy = "GROUP BY calleeareacode";
+                            } else {
+                                // Otros tipos: solo totales
+                                $columnasCDR = "SUM(feetime) AS feetime, SUM(fee) AS fee";
+                                $groupBy = "";
+                            }
+                            
+                            $stmt = Conexion::conectar()->prepare("SELECT $columnasCDR FROM `$tablaCDR` WHERE customeraccount = :valor $groupBy");
+                            $stmt->bindParam(":valor", $valor, PDO::PARAM_STR);
+                            $stmt->execute();
+                            
+                            $report[$table] = $stmt->fetchAll();
+                        } else {
+                            // Si no existe tabla CDR, usar tabla de reportes
+                            $stmt = Conexion::conectar()->prepare("SELECT $columnas FROM `$table` WHERE $item = :valor");
+                            $stmt->bindParam(":valor", $valor, PDO::PARAM_STR);
+                            $stmt->execute();
+                            
+                            $report[$table] = $stmt->fetchAll();
+                        }
+                    } else {
+                        // Usar tabla de reportes normal
+                        $stmt = Conexion::conectar()->prepare("SELECT $columnas FROM `$table` WHERE $item = :valor");
+                        $stmt->bindParam(":valor", $valor, PDO::PARAM_STR);
+                        $stmt->execute();
+            
+                        $report[$table] = $stmt->fetchAll();
+                    }
                 }
             }
             return $report;
@@ -110,7 +241,15 @@ class ModeloConsumption {
             $report = array();
 
             // Seleccionar columnas según el tipo de tabla
-            $columnas = $tieneGateway ? "gatewayid, ip, feetime, fee" : "feetime, fee";
+            if ($tieneGateway) {
+                $columnas = "gatewayid, ip, feetime, fee";
+            } elseif ($tipoTabla === 'phone') {
+                $columnas = "e164, feetime, fee";
+            } elseif ($tipoTabla === 'customerclearinglocation') {
+                $columnas = "areacode, feetime, fee";
+            } else {
+                $columnas = "feetime, fee";
+            }
         
             foreach ($tables as $table) {
                 // Extraer la fecha de la tabla (últimos 8 caracteres del nombre)
