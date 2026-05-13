@@ -1,0 +1,100 @@
+================================================================================
+RESUMEN DEL MAPEO DE VOS3000
+================================================================================
+Fecha: 2026-05-13 13:09:40
+Total de tablas: 10342
+
+
+REPORTES FEE: 5318
+--------------------------------------------------------------------------------
+  e_reportcustomerclearingfee                                 0 registros
+  e_reportcustomerclearingfee_20250731                        5 registros
+  e_reportcustomerclearinglocationfee                         0 registros
+  e_reportcustomerclearinglocationfee_20230615                0 registros
+  e_reportcustomerclearinglocationfee_20230616                0 registros
+  e_reportcustomerclearinglocationfee_20230617                0 registros
+  e_reportcustomerclearinglocationfee_20230618                0 registros
+  e_reportcustomerclearinglocationfee_20230619                0 registros
+  e_reportcustomerclearinglocationfee_20230620                0 registros
+  e_reportcustomerclearinglocationfee_20230621                0 registros
+  e_reportcustomerclearinglocationfee_20230622                0 registros
+  e_reportcustomerclearinglocationfee_20230623                0 registros
+  e_reportcustomerclearinglocationfee_20230624                0 registros
+  e_reportcustomerclearinglocationfee_20230625                0 registros
+  e_reportcustomerclearinglocationfee_20230626                0 registros
+  e_reportcustomerclearinglocationfee_20230627                0 registros
+  e_reportcustomerclearinglocationfee_20230628                0 registros
+  e_reportcustomerclearinglocationfee_20230629                0 registros
+  e_reportcustomerclearinglocationfee_20230630                0 registros
+  e_reportcustomerclearinglocationfee_20230701                0 registros
+  ... y 5298 tablas más
+
+CONFIGURACION: 4990
+--------------------------------------------------------------------------------
+  e_aas_alarm_word                                            0 registros
+  e_activephonecard                                           0 registros
+  e_alarm_current                                             8 registros
+  e_alarm_history                                             0 registros
+  e_alarm_history_20230617                                    1 registros
+  e_alarm_history_20230618                                    1 registros
+  e_alarm_history_20230619                                    1 registros
+  e_alarm_history_20230624                                    1 registros
+  e_alarm_history_20230629                                    3 registros
+  e_alarm_history_20230706                                    1 registros
+  e_alarm_history_20230707                                    1 registros
+  e_alarm_history_20230708                                    1 registros
+  e_alarm_history_20230712                                    6 registros
+  e_alarm_history_20230713                                    2 registros
+  e_alarm_history_20230715                                    3 registros
+  e_alarm_history_20230717                                    2 registros
+  e_alarm_history_20230718                                    5 registros
+  e_alarm_history_20230811                                    6 registros
+  e_alarm_history_20230815                                    1 registros
+  e_alarm_history_20230820                                    5 registros
+  ... y 4970 tablas más
+
+CLIENTES: 9
+--------------------------------------------------------------------------------
+  e_customer                                                213 registros
+  e_customerdetail                                          213 registros
+  e_reportcustomerclearingio                                  0 registros
+  e_reportcustomerclearingio_20250731                        95 registros
+  e_reportcustomerio                                          0 registros
+  e_reportcustomerio_20250731                                66 registros
+  e_usuariosclientes                                        214 registros
+  r_customer_e164ranges                                       0 registros
+  r_customer_privileges                                       7 registros
+
+USUARIOS: 5
+--------------------------------------------------------------------------------
+  e_user                                                     13 registros
+  e_useragent                                                 0 registros
+  e_userlogin                                                 0 registros
+  e_users_billing                                             0 registros
+  e_webusers                                                  3 registros
+
+FIREWALL: 3
+--------------------------------------------------------------------------------
+  e_equipment                                                 3 registros
+  e_firewall                                                229 registros
+  e_media_block_ip                                            2 registros
+
+OTRAS: 17
+--------------------------------------------------------------------------------
+  e_billing_report                                            0 registros
+  e_reportagentincome                                         0 registros
+  e_reportagentincome_20250731                               29 registros
+  e_reportgatewaycrosslocationasracd                          0 registros
+  e_reportgatewaycrosslocationasracd_20250731               655 registros
+  e_reportgatewaymappingasracd                                0 registros
+  e_reportgatewaymappingasracd_20250731                      76 registros
+  e_reportgatewaymappinglocationasracd                        0 registros
+  e_reportgatewaymappinglocationasracd_20250731             289 registros
+  e_reportgatewayroutingasracd                                0 registros
+  e_reportgatewayroutingasracd_20250731                     143 registros
+  e_reportgatewayroutinglocationasracd                        0 registros
+  e_reportgatewayroutinglocationasracd_20250731             149 registros
+  e_reportmanagement                                      1,061 registros
+  r_cc_seat_group_seat                                        0 registros
+  r_feerategroup_privileges                                  56 registros
+  r_suite_privileges                                          0 registros

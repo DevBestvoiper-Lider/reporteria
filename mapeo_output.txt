@@ -1,0 +1,34 @@
+﻿python : Traceback (most recent call last):
+En línea: 1 Carácter: 1
++ python map_vos3000_db.py 2>&1 | Out-File -FilePath "mapeo_output.txt" ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last) 
+   ::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\laragon\www\reporteria\map_vos3000_db.py", line 24, in conectar_db
+    print("\u2713 Conexi¾n exitosa al servidor VOS3000 (sw3.bestvoiper.com)")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2713' in 
+position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\laragon\www\reporteria\map_vos3000_db.py", line 327, in <module>
+    mapear_base_datos()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\laragon\www\reporteria\map_vos3000_db.py", line 179, in 
+mapear_base_datos
+    conexion = conectar_db()
+  File "C:\laragon\www\reporteria\map_vos3000_db.py", line 27, in conectar_db
+    print(f"\u2717 Error al conectar: {e}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2717' in 
+position 0: character maps to <undefined>
