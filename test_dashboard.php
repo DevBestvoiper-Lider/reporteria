@@ -52,8 +52,8 @@ try {
         print_r($dashboard);
         echo "</pre>";
         
-        $consumohoysinformat = (float)($dashboard['todayconsumption'] ?? 0);
-        $saldoactual = (float)($dashboard['money'] ?? 0);
+        $consumohoysinformat = (float)(isset($dashboard['todayconsumption']) ? $dashboard['todayconsumption'] : 0);
+        $saldoactual = (float)(isset($dashboard['money']) ? $dashboard['money'] : 0);
         echo "<p><strong>Consumo Hoy:</strong> $consumohoysinformat</p>";
         echo "<p><strong>Saldo Actual:</strong> $saldoactual</p>";
     } else {

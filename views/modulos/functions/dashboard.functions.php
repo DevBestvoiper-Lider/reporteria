@@ -6,13 +6,13 @@ $active = "Dashboard";
 
 // el siguiente script nos ayuda a obtener el customeraccountname del usuario actual para traer la data
 
-$accountname = $_SESSION["customeraccountname"] ?? '';
+$accountname = isset($_SESSION["customeraccountname"]) ? $_SESSION["customeraccountname"] : '';
 
 if ($accountname === '' && !empty($_SESSION["nombre"])) {
     $item = 'nombre';
     $valor = $_SESSION["nombre"];
     $usuarios = ControllersUsuarios::ctrMostrarUsuarios($item, $valor);
-    $accountname = $usuarios['customeraccountname'] ?? '';
+    $accountname = isset($usuarios['customeraccountname']) ? $usuarios['customeraccountname'] : '';
 }
 
 ######################## DASHBOARD ###############################
@@ -26,9 +26,9 @@ $valor = $accountname;
 $dashboard = ControllersDashboard::ctrMostrarDatosHoy($item, $valor);
 
 
-$consumohoysinformat = (float)($dashboard['todayconsumption'] ?? 0);
+$consumohoysinformat = (float)(isset($dashboard['todayconsumption']) ? $dashboard['todayconsumption'] : 0);
 
-$saldoactual = (float)($dashboard['money'] ?? 0);
+$saldoactual = (float)(isset($dashboard['money']) ? $dashboard['money'] : 0);
 
 $consumohoyformat = NumberHelper::formatFeeClean(abs($consumohoysinformat));
 
@@ -194,12 +194,12 @@ if(isset($dataArray)){
     foreach ($dataArray as $row) {
 
          
-        $sum_holdtime += $row['feetime'] ?? 0;
-        $feetime = abs($row['feetime'] ?? 0);
-        $fee2 = abs($row['fee'] ?? 0);
+        $sum_holdtime += isset($row['feetime']) ? $row['feetime'] : 0;
+        $feetime = abs(isset($row['feetime']) ? $row['feetime'] : 0);
+        $fee2 = abs(isset($row['fee']) ? $row['fee'] : 0);
 
         $feeconsum[] = $fee2;
-        $ipgateway[] = $row['ip'] ?? '';
+        $ipgateway[] = isset($row['ip']) ? $row['ip'] : '';
         $feetimes[] = $feetime;
 }
 }
