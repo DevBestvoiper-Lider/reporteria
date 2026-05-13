@@ -15,10 +15,29 @@ $_SESSION["iniciarsession"] = "ok";
 $_SESSION["customeraccountname"] = "BESTBPO";
 $_SESSION["nombre"] = "BESTBPO";
 
-require_once 'models/conexion.php';
-require_once 'controllers/dashboard.controllers.php';
-require_once 'models/dashboard.models.php';
-require_once 'helpers/NumberHelper.php';
+try {
+    require_once 'models/conexion.php';
+} catch(Exception $e) {
+    die("<p style='color: red;'>Error cargando conexion.php: " . $e->getMessage() . "</p>");
+}
+
+try {
+    require_once 'models/dashboard.models.php';
+} catch(Exception $e) {
+    die("<p style='color: red;'>Error cargando dashboard.models.php: " . $e->getMessage() . "</p>");
+}
+
+try {
+    require_once 'controllers/dashboard.controllers.php';
+} catch(Exception $e) {
+    die("<p style='color: red;'>Error cargando dashboard.controllers.php: " . $e->getMessage() . "</p>");
+}
+
+try {
+    require_once 'helpers/NumberHelper.php';
+} catch(Exception $e) {
+    die("<p style='color: red;'>Error cargando NumberHelper.php: " . $e->getMessage() . "</p>");
+}
 
 $accountname = "BESTBPO";
 
