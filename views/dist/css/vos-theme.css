@@ -755,3 +755,57 @@ body.vos-app .breadcrumb {
   background: transparent;
   padding: 0;
 }
+
+body.vos-app .bv-filters .form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--bv-muted);
+  margin-bottom: 0.35rem;
+}
+
+body.vos-app .bv-duration-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--bv-border);
+  border-radius: 12px;
+  padding: 0.7rem 0.85rem;
+}
+
+body.vos-app .bv-duration-row .form-select,
+body.vos-app .bv-duration-row .form-control {
+  max-width: 180px;
+}
+
+body.vos-app .bv-logic {
+  display: flex;
+  gap: 0.9rem;
+  font-size: 0.88rem;
+  color: var(--bv-text);
+}
+
+body.vos-app .bv-logic input {
+  margin-right: 0.3rem;
+}
+
+body.vos-app .bv-duration-hint {
+  color: var(--bv-muted);
+  font-size: 0.8rem;
+}
+
+body.vos-app .dataTables_filter label {
+  color: var(--bv-muted);
+}
+
+body.vos-app table.dataTable thead th {
+  white-space: nowrap;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--bv-border) !important;
+}
+
+body.vos-app table.dataTable tbody td {
+  font-size: 0.88rem;
+  vertical-align: middle;
+}

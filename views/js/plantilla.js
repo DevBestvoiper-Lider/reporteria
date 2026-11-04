@@ -6,6 +6,7 @@ Object.assign(DataTable.defaults, {
 $("#table").DataTable({
     "language": {
         "sProcessing": "Procesando...",
+        "sSearch": "Buscar:",
         "sLengthMenu": "Mostrar _MENU_ registros",
         "sZeroRecords": "No se encontraron resultados",
         "sEmptyTable": "Ningún dato disponible en esta tabla =(",
@@ -38,6 +39,7 @@ $("#table2").DataTable({
     "language": {
         
         "sProcessing": "Procesando...",
+        "sSearch": "Buscar:",
         "sLengthMenu": "Mostrar _MENU_ registros",
         "sZeroRecords": "No se encontraron resultados",
         "sEmptyTable": "Ningún dato disponible en esta tabla =(",
@@ -68,6 +70,7 @@ $("#table2").DataTable({
 $("#tableday").DataTable({
     "language": {
         "sProcessing": "Procesando...",
+        "sSearch": "Buscar:",
         "sLengthMenu": "Mostrar _MENU_ registros",
         "sZeroRecords": "No se encontraron resultados",
         "sEmptyTable": "Ningún dato disponible en esta tabla =(",
@@ -99,6 +102,7 @@ $("#tableDashboard").DataTable({
     "pageLength": 25,
     "language": {
         "sProcessing": "Procesando...",
+        "sSearch": "Buscar:",
         "sLengthMenu": "Mostrar _MENU_ registros",
         "sZeroRecords": "No se encontraron resultados",
         "sEmptyTable": "Ningún dato disponible en esta tabla =(",
