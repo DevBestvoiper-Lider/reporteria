@@ -175,11 +175,11 @@
             <div class="col-lg-4">
                 <div class="bv-panel mb-3">
                     <h5 class="card-title">Consumo por código de área <span>| Hoy</span></h5>
-                    <div id="trafficChart" style="min-height: 220px;"></div>
+                    <div id="trafficChart" class="bv-chart-box"></div>
                 </div>
                 <div class="bv-panel">
                     <h5 class="card-title">Motivo de cuelgue <span>| Hoy</span></h5>
-                    <div id="hangupChart" style="min-height: 220px;"></div>
+                    <div id="hangupChart" class="bv-chart-box"></div>
                 </div>
             </div>
             <div class="col-lg-6">
@@ -249,33 +249,38 @@
                     tooltip: { x: { format: 'dd/MM/yy' } }
                 }).render();
 
-                echarts.init(document.querySelector("#trafficChart")).setOption({
-                    tooltip: { trigger: 'item', formatter: '{b}: ${c}' },
-                    legend: { bottom: 0 },
-                    color: ['#2563eb', '#f97316', '#22c55e', '#ef4444', '#a855f7'],
-                    series: [{
-                        name: 'Área',
-                        type: 'pie',
-                        radius: ['48%', '72%'],
-                        itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
-                        label: { show: false },
-                        data: areaData.length ? areaData : [{ name: 'Sin datos', value: 0 }]
-                    }]
-                });
+                function bvHasChartData(items) {
+                    if (!items || !items.length) return false;
+                    for (var i = 0; i < items.length; i++) {
+                        if (Number(items[i].value) > 0) return true;
+                    }
+                    return false;
+                }
 
-                echarts.init(document.querySelector("#hangupChart")).setOption({
-                    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-                    legend: { bottom: 0 },
-                    color: ['#2563eb', '#f97316', '#22c55e', '#ef4444', '#a855f7', '#14b8a6'],
-                    series: [{
-                        name: 'Motivo',
-                        type: 'pie',
-                        radius: ['48%', '72%'],
-                        itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
-                        label: { show: false },
-                        data: hangupData.length ? hangupData : [{ name: 'Sin datos', value: 0 }]
-                    }]
-                });
+                function bvRenderDonut(selector, data, tooltip) {
+                    var el = document.querySelector(selector);
+                    if (!el) return;
+                    if (!bvHasChartData(data)) {
+                        el.innerHTML = '<p class="bv-kpi-sub mb-0 text-center" style="padding-top:4.5rem">Sin datos para hoy.</p>';
+                        return;
+                    }
+                    echarts.init(el).setOption({
+                        tooltip: { trigger: 'item', formatter: tooltip },
+                        legend: { bottom: 0, type: 'scroll' },
+                        color: ['#2563eb', '#f97316', '#22c55e', '#ef4444', '#a855f7', '#14b8a6'],
+                        series: [{
+                            type: 'pie',
+                            radius: ['48%', '72%'],
+                            center: ['50%', '42%'],
+                            itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
+                            label: { show: false },
+                            data: data
+                        }]
+                    });
+                }
+
+                bvRenderDonut('#trafficChart', areaData, '{b}: ${c}');
+                bvRenderDonut('#hangupChart', hangupData, '{b}: {c} ({d}%)');
             });
         </script>
 

@@ -329,6 +329,10 @@ body.vos-app .footer {
   border: 0;
   color: var(--bv-muted) !important;
   font-size: 0.8rem;
+  position: relative;
+  z-index: 2;
+  clear: both;
+  margin-top: 1rem;
 }
 
 /* Dashboard */
@@ -644,7 +648,19 @@ body.vos-app .footer {
   padding: 1.1rem 1.15rem;
   box-shadow: var(--bv-shadow);
   border: 1px solid var(--bv-border);
-  height: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.bv-chart-box {
+  height: 240px;
+  width: 100%;
+  overflow: hidden;
+}
+
+#reportsChart {
+  height: 220px;
+  overflow: hidden;
 }
 
 body.vos-app.login-page .card-title {

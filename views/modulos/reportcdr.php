@@ -115,7 +115,7 @@ function bvOpOptions($selected) {
             <div class="col-lg-5">
                 <div class="bv-panel h-100">
                     <h5 class="card-title">Motivo de cuelgue</h5>
-                    <div id="hangupChart" style="min-height: 260px;"></div>
+                    <div id="hangupChart" class="bv-chart-box"></div>
                 </div>
             </div>
             <div class="col-lg-7">
