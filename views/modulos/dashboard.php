@@ -36,7 +36,6 @@
                 <?php } ?>
             </p>
             <div class="bv-hero-btns">
-                <a class="bv-btn-green" href="payhistory"><i class="bi bi-plus-lg"></i> Registrar pago</a>
                 <a class="bv-btn-navy" href="payhistory">Histórico de pagos</a>
             </div>
             <div class="bv-hero-meta">
