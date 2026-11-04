@@ -55,7 +55,52 @@ if (isset($tuArray)) {
         }
     }
 }
-// Ahora $solicData tiene la estructura: [numsolic => ['fee' => totalFee, 'feetime' => totalFeetime]]
+$horasTot = floor($totalTime / 3600);
+$minTot = floor(($totalTime % 3600) / 60);
+$segTot = $totalTime % 60;
+$totalTimeFormat = $horasTot . ':' . $minTot . ':' . $segTot;
+$totalFeeFormat = NumberHelper::formatFeeClean(abs($totalFee));
+$totalLineas = count($solicData);
+
+$lineLabels = array();
+$lineFees = array();
+$lineTimes = array();
+$consumoPie = array();
+
+if (!empty($solicData)) {
+    uasort($solicData, function ($a, $b) {
+        $fa = abs((float) $a['fee']);
+        $fb = abs((float) $b['fee']);
+        if ($fa == $fb) {
+            return 0;
+        }
+        return ($fa < $fb) ? 1 : -1;
+    });
+
+    $topLines = array_slice($solicData, 0, 12, true);
+    $otrosFee = 0;
+    $i = 0;
+    foreach ($solicData as $numsolic => $row) {
+        $feeAbs = abs((float) $row['fee']);
+        if ($i < 12) {
+            $lineLabels[] = (string) $numsolic;
+            $lineFees[] = $feeAbs;
+            $lineTimes[] = (int) $row['feetime'];
+            $consumoPie[] = array('name' => (string) $numsolic, 'value' => round($feeAbs, 2));
+        } else {
+            $otrosFee += $feeAbs;
+        }
+        $i++;
+    }
+    if ($otrosFee > 0) {
+        $consumoPie[] = array('name' => 'Otras líneas', 'value' => round($otrosFee, 2));
+    }
+}
+
+$lineLabelsJson = json_encode($lineLabels);
+$lineFeesJson = json_encode($lineFees);
+$lineTimesJson = json_encode($lineTimes);
+$consumoPieJson = json_encode($consumoPie);
 
 
 // if (isset($tuArray)) {
