@@ -2,12 +2,12 @@
 
 class ControllersConsumption{
 
-    // Tipos de tablas disponibles
+    // Tipos de agrupación sobre la tabla e_cdr (misma fuente que reportconsumo)
     static private $tiposTabla = array(
-        'gatewaymapping' => 'e_reportgatewaymappingfee_',
-        'gatewayrouting' => 'e_reportgatewayroutingfee_',
-        'phone' => 'e_reportphonefee_',
-        'customerclearinglocation' => 'e_reportcustomerclearinglocationfee_'
+        'gatewaymapping' => 'e_cdr_',
+        'gatewayrouting' => 'e_cdr_',
+        'phone' => 'e_cdr_',
+        'customerclearinglocation' => 'e_cdr_'
     );
 
     // Tipos que tienen gatewayid
@@ -72,7 +72,7 @@ class ControllersConsumption{
             $tabla = $prefijo.$dia;
             $tieneGateway = self::ctrTieneGatewayId($tipo);
             
-            $datos = ModeloConsumption::MdlMostrarLlamadasCdrXDia($tabla, $item, $valor, $tieneGateway);
+            $datos = ModeloConsumption::MdlMostrarLlamadasCdrXDia($tabla, $item, $valor, $tieneGateway, $tipo);
             
             if(!empty($datos)){
                 $resultadoConsolidado[$tipo] = array(
@@ -94,7 +94,7 @@ class ControllersConsumption{
             $tabla = $prefijo."%";
             $tieneGateway = self::ctrTieneGatewayId($tipo);
             
-            $datos = ModeloConsumption::MdlMostrarConsumoCdrMes($tabla, $item, $valor, $tieneGateway);
+            $datos = ModeloConsumption::MdlMostrarConsumoCdrMes($tabla, $item, $valor, $tieneGateway, $tipo);
             
             if(!empty($datos)){
                 $resultadoConsolidado[$tipo] = array(

@@ -23,7 +23,7 @@ ini_set('max_execution_time', 0); // sin límite de tiempo
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <title>BESTVOIPER Reports</title>
+  <title>BestVoiper Reportería</title>
 
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -50,6 +50,10 @@ ini_set('max_execution_time', 0); // sin límite de tiempo
 
   <!-- Theme style -->
   <link rel="stylesheet" href="views/dist/css/style.css">
+  <link rel="stylesheet" href="views/dist/css/vos-theme.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- <link rel="stylesheet" href="views/bower_components/bootstrap/dist/css/bootstrap.min.css"> -->
 
 
@@ -89,7 +93,7 @@ ini_set('max_execution_time', 0); // sin límite de tiempo
 
 </head>
 
-<body class="hold-transition skin-blue sidebar-mini login-page ">
+<body class="hold-transition skin-blue sidebar-mini login-page vos-app">
   <?php 
 
     if(isset($_SESSION["iniciarsession"]) && $_SESSION["iniciarsession"] == "ok")

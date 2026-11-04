@@ -10,7 +10,7 @@ class Conexion
 
         if ($isProduction) {
             // Producción (servidor real)
-            $host = getenv('DB_HOST') ?: '127.0.0.1';
+            $host = getenv('DB_HOST') ?: 'localhost';
             $dbname = getenv('DB_NAME') ?: 'vos3000';
             $username = getenv('DB_USER') ?: 'root';
             $password = getenv('DB_PASS') ?: 'd57hgtfresh3rdxy78D';

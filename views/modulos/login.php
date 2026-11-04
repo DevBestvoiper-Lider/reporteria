@@ -13,8 +13,10 @@
 
                 <div class="card-body">
 
-                  <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Inicia Sesión</h5>
+                  <div class="pt-4 pb-2 text-center">
+                    <p class="text-uppercase small mb-1 bv-login-kicker">BestVoiper</p>
+                    <h5 class="card-title text-center pb-0 fs-4">Inicia sesión</h5>
+                    <p class="small mb-0 text-muted">Reportería de clientes</p>
                   </div>
 
                   <form class="row g-3 needs-validation" method="POST">

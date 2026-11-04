@@ -267,25 +267,72 @@ foreach ($tuArray as $fecha => $registros) {
 //     }
 // }
 
-$Consumarea = array();
-$Consumfee2 = 0;
+$consumoPorArea = array();
 
-if(isset($dataArray2)){
-        foreach ($dataArray2 as $row) {
-            $Consumfee2 += abs(@$row['fee']);
-
-            $Consumfee2format = NumberHelper::formatFeeClean($Consumfee2);
-
-            $areacode = @$row['callerareacode'];
-
-            $Consumarea = array(
-                'value' => $Consumfee2format,
-                'name' => @$areacode,
-            );
+if (isset($dataArray2)) {
+    foreach ($dataArray2 as $row) {
+        $areacode = isset($row['callerareacode']) && $row['callerareacode'] !== ''
+            ? $row['callerareacode']
+            : 'Sin código';
+        if (!isset($consumoPorArea[$areacode])) {
+            $consumoPorArea[$areacode] = 0;
+        }
+        $consumoPorArea[$areacode] += abs((float)$row['fee']);
     }
 }
 
-$ConsumAreaCode = json_encode($Consumarea);
+arsort($consumoPorArea);
+$ConsumAreaChart = array();
+foreach ($consumoPorArea as $name => $value) {
+    $ConsumAreaChart[] = array('name' => (string)$name, 'value' => round($value, 2));
+}
+
+$ConsumAreaCode = json_encode($ConsumAreaChart);
+
+$topIps = array();
+foreach ($datosAgrupados as $ip => $gateways) {
+    $feeIp = 0;
+    $desc = '';
+    foreach ($gateways as $gateway => $data) {
+        $feeIp += abs((float)$data['sum_fee']);
+        if ($desc === '') {
+            $desc = $gateway;
+        }
+    }
+    $topIps[] = array(
+        'ip' => $ip,
+        'desc' => $desc,
+        'fee' => $feeIp,
+        'holdtime' => array_sum(array_column($gateways, 'sum_holdtime')),
+    );
+}
+
+usort($topIps, function ($a, $b) {
+    if ($a['fee'] == $b['fee']) {
+        return 0;
+    }
+    return ($a['fee'] < $b['fee']) ? 1 : -1;
+});
+$topIps = array_slice($topIps, 0, 5);
+$maxTopIpFee = !empty($topIps) ? max(array_column($topIps, 'fee')) : 1;
+
+$diasRestantes = (int)date('t') - (int)date('j');
+$porcentajeAvanceMes = round(((int)date('j') / (int)date('t')) * 100, 1);
+$porcentajeConsumoMes = ($saldoactual + abs($totalEsteMes)) > 0
+    ? min(100, round((abs($totalEsteMes) / ($saldoactual + abs($totalEsteMes))) * 100, 1))
+    : 0;
+
+$totalLlamadasHoy = isset($dataArray) ? count($dataArray) : 0;
+$sumHoldtimeHoy = 0;
+foreach ($datosAgrupados as $gateways) {
+    foreach ($gateways as $data) {
+        $sumHoldtimeHoy += (int)$data['sum_holdtime'];
+    }
+}
+$horasHoy = floor($sumHoldtimeHoy / 3600);
+$minHoy = floor(($sumHoldtimeHoy % 3600) / 60);
+$segHoy = $sumHoldtimeHoy % 60;
+$duracionHoyFormat = sprintf('%dh %02dm %02ds', $horasHoy, $minHoy, $segHoy);
 ####################################################################################################
 ############# RECARGAS REALIZADAS HOY #######################
 
@@ -293,5 +340,92 @@ $ConsumAreaCode = json_encode($Consumarea);
 $dashboard2 = ControllersDashboard::ctrMostrarUltimPay($item, $valor);
 
 $tuArray = $dashboard2;
+
+$hora = (int) date('G');
+if ($hora < 12) {
+    $saludo = 'Buenos días';
+} elseif ($hora < 19) {
+    $saludo = 'Buenas tardes';
+} else {
+    $saludo = 'Buenas noches';
+}
+
+$clienteNombre = $accountname !== '' ? $accountname : (isset($_SESSION['nombre']) ? $_SESSION['nombre'] : 'Cliente');
+
+$diaMes = max(1, (int) date('j'));
+$diasMes = (int) date('t');
+$consumoMesAbs = abs((float) $totalEsteMes);
+$consumoHoyAbs = abs((float) $consumohoysinformat);
+$consumoAyerAbs = abs((float) $valorAyer);
+$promedioDia = $consumoMesAbs / $diaMes;
+$proyeccionMes = $promedioDia * $diasMes;
+$diasEquivalentes = $promedioDia > 0 ? (int) round(abs($saldoactual) / $promedioDia) : 0;
+$saldoNegativo = $saldoactual < 0;
+
+$deltaHoyNum = isset($porcentaje) ? (float) $porcentaje : 0;
+$deltaMesNum = isset($porcentaje2) ? (float) $porcentaje2 : 0;
+$deltaProy = $valorAntMes != 0 ? (($proyeccionMes - abs((float) $valorAntMes)) / abs((float) $valorAntMes)) * 100 : 0;
+
+$sparkHoy = array($consumoAyerAbs, $consumoHoyAbs);
+$sparkMes = array_map('floatval', array_slice($feesArray, -12));
+if (count($sparkMes) < 2) {
+    $sparkMes = array($consumoMesAbs * 0.7, $consumoMesAbs);
+}
+$sparkProy = $sparkMes;
+$sparkProy[] = $proyeccionMes;
+
+if (!function_exists('bvSparkline')) {
+    function bvSparkline($values, $color = '#2563eb') {
+        $values = array_values(array_map('floatval', (array) $values));
+        if (count($values) < 2) {
+            $values = array(0, 1);
+        }
+        $min = min($values);
+        $max = max($values);
+        $range = ($max - $min) ?: 1;
+        $w = 92;
+        $h = 38;
+        $n = count($values);
+        $pts = array();
+        foreach ($values as $i => $v) {
+            $x = ($i / ($n - 1)) * $w;
+            $y = $h - (($v - $min) / $range) * ($h - 6) - 3;
+            $pts[] = round($x, 1) . ',' . round($y, 1);
+        }
+        $points = implode(' ', $pts);
+        return '<svg width="' . $w . '" height="' . $h . '" viewBox="0 0 ' . $w . ' ' . $h . '" aria-hidden="true"><polyline fill="none" stroke="' . htmlspecialchars($color, ENT_QUOTES, 'UTF-8') . '" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" points="' . $points . '"/></svg>';
+    }
+}
+
+if (!function_exists('bvMoney')) {
+    function bvMoney($n, $withSign = true) {
+        $sign = ($withSign && $n < 0) ? '-' : '';
+        return $sign . '$' . number_format(abs((float) $n), 0, ',', '.');
+    }
+}
+
+if (!function_exists('bvDeltaHtml')) {
+    function bvDeltaHtml($pct) {
+        $up = $pct >= 0;
+        $cls = $up ? 'up' : 'down';
+        $prefix = $up ? '+' : '';
+        return '<span class="bv-delta ' . $cls . '">' . $prefix . number_format($pct, 1, ',', '.') . '%</span>';
+    }
+}
+
+$minutosHoy = (int) round($sumHoldtimeHoy / 60);
+
+$ultimoPagoMonto = 0;
+$ultimoPagoFecha = 'Sin registros';
+if (is_array($tuArray) && !empty($tuArray)) {
+    $pago = reset($tuArray);
+    if (is_array($pago) && isset($pago['paymoney'])) {
+        $ultimoPagoMonto = (float) $pago['paymoney'];
+        $timestamp = ((float) $pago['time'] / 1000) - (7 * 3600);
+        $ultimoPagoFecha = date('d M Y · H:i', (int) $timestamp);
+    }
+}
+
+$actualizadoHora = date('H:i');
 
 ?>

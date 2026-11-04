@@ -1,82 +1,61 @@
-    <header id="header" class="header fixed-top d-flex align-items-center">
+<?php
+$vosNombre = isset($_SESSION['nombre']) ? $_SESSION['nombre'] : 'Usuario';
+$vosCuenta = isset($_SESSION['customeraccountname']) ? $_SESSION['customeraccountname'] : $vosNombre;
+$vosIniciales = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $vosCuenta), 0, 2));
+if ($vosIniciales === '') {
+    $vosIniciales = 'BV';
+}
+?>
 
-        <div class="d-flex align-items-center justify-content-between">
-            <a href="dashboard" class="logo d-flex align-items-center">
-                <img src="views/img/logos/logo.png" alt="" height="50px">
-            </a>
-            <i class="bi bi-list toggle-sidebar-btn"></i>
-        </div>
-        <!-- End Logo -->
+<header id="header" class="header fixed-top d-flex align-items-center">
 
-        <nav class="header-nav ms-auto">
-            <ul class="d-flex align-items-center">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-list toggle-sidebar-btn d-xl-none"></i>
+    </div>
 
-                <li class="nav-item d-block d-lg-none">
-                    <a class="nav-link nav-icon search-bar-toggle " href="#">
-                        <i class="bi bi-search"></i>
-                    </a>
-                </li>
-                <!-- End Search Icon-->
+    <form class="bv-search mx-auto d-none d-md-block" action="reportcdr" method="post">
+        <i class="bi bi-search"></i>
+        <input type="text" name="callerSolic" placeholder="Buscar IP, prefijo, país o reporte" autocomplete="off">
+        <input type="hidden" name="fechainicio" value="<?php echo date('Y-m-d'); ?>">
+        <input type="hidden" name="fechafin" value="<?php echo date('Y-m-d'); ?>">
+        <input type="hidden" name="archivo" value="reportcdr">
+    </form>
 
-		<li class="nav-item dropdown">
-			<ul class="dropdown-menu-end dropdown-menu-arrow notifications">
-
-                    </ul>
-                    <!-- End Notification Dropdown Items -->
-
-                </li>
-                <!-- End Notification Nav -->
-
-                <li class="nav-item dropdown">
-
-                    <!-- End Messages Icon -->
-
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
-
-                    </ul>
-                    <!-- End Messages Dropdown Items -->
-
-                </li>
-                <!-- End Messages Nav -->
-
-                <li class="nav-item dropdown pe-3">
-
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                        <img src="views/img/users/avatar.png" class="user-image" alt="User Image">
-                        <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $_SESSION["nombre"]; ?></span>
-                    </a>
-                    <!-- End Profile Iamge Icon -->
-
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-                        <li class="dropdown-header">
-                            <h6><?php echo $_SESSION["nombre"]; ?></h6>
-                            <span><?php echo $_SESSION["perfil"]; ?></span>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="miaccount">
-                                <i class="bi bi-box-arrow-right"></i>
-                                <span>Mi Cuenta</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="salir">
-                                <i class="bi bi-box-arrow-right"></i>
-                                <span>Sign Out</span>
-                            </a>
-                        </li>
-
-                    </ul>
-                    <!-- End Profile Dropdown Items -->
-                </li>
-                <!-- End Profile Nav -->
-
-            </ul>
-        </nav>
-        <!-- End Icons Navigation -->
-
-    </header>
+    <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center gap-2">
+            <li class="nav-item">
+                <a class="bv-icon-btn" href="payhistory" title="Notificaciones">
+                    <i class="bi bi-bell"></i>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="bv-user-chip dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                    <span class="bv-avatar"><?php echo htmlspecialchars($vosIniciales, ENT_QUOTES, 'UTF-8'); ?></span>
+                    <span class="d-none d-md-block text-start">
+                        <strong><?php echo htmlspecialchars($vosCuenta, ENT_QUOTES, 'UTF-8'); ?></strong>
+                        <small>Cliente</small>
+                    </span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                    <li class="dropdown-header">
+                        <h6><?php echo htmlspecialchars($vosNombre, ENT_QUOTES, 'UTF-8'); ?></h6>
+                        <span><?php echo htmlspecialchars($_SESSION['perfil'], ENT_QUOTES, 'UTF-8'); ?></span>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="miaccount">
+                            <i class="bi bi-person"></i>
+                            <span>Mi cuenta</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="salir">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Cerrar sesión</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</header>
