@@ -95,25 +95,48 @@
             </div>
         </div>
 
-        <div class="bv-kpi-row" style="grid-template-columns: 1fr 1fr 2fr;">
+        <div class="bv-kpi-row">
             <div class="bv-kpi">
                 <div class="bv-kpi-head">
                     <div class="left"><span class="bv-kpi-ico orange"><i class="bi bi-telephone"></i></span> Minutos hoy</div>
                 </div>
-                <div class="bv-kpi-value"><?php echo number_format($minutosHoy, 0, ',', '.'); ?></div>
-                <div class="bv-kpi-sub"><?php echo $duracionHoyFormat; ?> · <?php echo number_format($totalLlamadasHoy, 0, ',', '.'); ?> llamadas</div>
+                <div class="bv-kpi-body">
+                    <div>
+                        <div class="bv-kpi-value"><?php echo number_format($minutosHoy, 0, ',', '.'); ?></div>
+                        <div class="bv-kpi-sub"><?php echo $duracionHoyFormat; ?></div>
+                    </div>
+                    <?php echo bvSparkline($sparkHoy, '#f97316'); ?>
+                </div>
             </div>
             <div class="bv-kpi">
                 <div class="bv-kpi-head">
-                    <div class="left"><span class="bv-kpi-ico blue"><i class="bi bi-percent"></i></span> Avance del mes</div>
+                    <div class="left"><span class="bv-kpi-ico blue"><i class="bi bi-telephone-outbound"></i></span> Llamadas hoy</div>
                 </div>
-                <div class="bv-kpi-value"><?php echo $porcentajeAvanceMes; ?>%</div>
-                <div class="bv-kpi-sub"><?php echo $diasRestantes; ?> días restantes</div>
+                <div class="bv-kpi-body">
+                    <div>
+                        <div class="bv-kpi-value"><?php echo number_format($totalLlamadasHoy, 0, ',', '.'); ?></div>
+                        <div class="bv-kpi-sub">Registros CDR de hoy</div>
+                    </div>
+                    <?php echo bvSparkline($sparkHoy, '#60a5fa'); ?>
+                </div>
             </div>
-            <div class="bv-panel">
-                <h5 class="card-title mb-3">Evolución de consumo <span>| Este mes</span></h5>
-                <div id="reportsChart"></div>
+            <div class="bv-kpi">
+                <div class="bv-kpi-head">
+                    <div class="left"><span class="bv-kpi-ico green"><i class="bi bi-calendar3"></i></span> Avance del mes</div>
+                </div>
+                <div class="bv-kpi-body">
+                    <div>
+                        <div class="bv-kpi-value"><?php echo $porcentajeAvanceMes; ?>%</div>
+                        <div class="bv-kpi-sub"><?php echo $diasRestantes; ?> días restantes</div>
+                    </div>
+                    <?php echo bvSparkline($sparkMes, '#22c55e'); ?>
+                </div>
             </div>
+        </div>
+
+        <div class="bv-panel mb-3">
+            <h5 class="card-title">Evolución de consumo <span>| Este mes</span></h5>
+            <div id="reportsChart"></div>
         </div>
 
         <div class="row g-3 mt-0">

@@ -5,7 +5,7 @@ function vosNavActive($rutas, $actual) {
     if (!is_array($rutas)) {
         $rutas = array($rutas);
     }
-    return in_array($actual, $rutas, true) ? ' active' : '';
+    return in_array($actual, $rutas, true) ? ' active' : ' collapsed';
 }
 ?>
 

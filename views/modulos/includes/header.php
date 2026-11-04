@@ -13,7 +13,7 @@ if ($vosIniciales === '') {
         <i class="bi bi-list toggle-sidebar-btn d-xl-none"></i>
     </div>
 
-    <form class="bv-search mx-auto d-none d-md-block" action="reportcdr" method="post">
+    <form class="bv-search flex-grow-1 d-none d-md-block" action="reportcdr" method="post">
         <i class="bi bi-search"></i>
         <input type="text" name="callerSolic" placeholder="Buscar IP, prefijo, país o reporte" autocomplete="off">
         <input type="hidden" name="fechainicio" value="<?php echo date('Y-m-d'); ?>">

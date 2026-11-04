@@ -40,9 +40,10 @@ body.vos-app a:hover {
 /* Header sobre el contenido, no sobre el sidebar */
 body.vos-app .header {
   background: var(--bv-bg) !important;
-  border-bottom: 0;
-  box-shadow: none;
-  padding: 0.65rem 1.5rem 0.35rem;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+  height: 72px !important;
+  padding: 0.65rem 1.5rem !important;
 }
 
 @media (min-width: 1200px) {
@@ -58,8 +59,9 @@ body.vos-app .header .toggle-sidebar-btn {
 }
 
 body.vos-app .bv-search {
-  width: min(420px, 42vw);
+  width: min(520px, 48vw);
   position: relative;
+  margin-right: 1rem;
 }
 
 body.vos-app .bv-search i {
@@ -175,7 +177,12 @@ body.vos-app .sidebar {
 @media (min-width: 1200px) {
   body.vos-app #main,
   body.vos-app #footer {
-    margin-left: var(--bv-sidebar-width);
+    margin-left: var(--bv-sidebar-width) !important;
+  }
+
+  body.vos-app.toggle-sidebar #main,
+  body.vos-app.toggle-sidebar #footer {
+    margin-left: 0 !important;
   }
 }
 
@@ -240,7 +247,8 @@ body.vos-app .sidebar-nav .nav-heading {
   padding: 0.85rem 0.85rem 0.4rem;
 }
 
-body.vos-app .sidebar-nav .nav-link {
+body.vos-app .sidebar-nav .nav-link,
+body.vos-app .sidebar-nav .nav-link.collapsed {
   color: #334155 !important;
   background: transparent !important;
   border-radius: 12px;
@@ -662,4 +670,88 @@ body.vos-app.login-page .card-title {
 body.vos-app.login-page .bv-login-kicker {
   color: var(--bv-muted);
   letter-spacing: 0.08em;
+}
+
+/* ===== Resto de páginas (CDR, consumos, pagos, tarifas) ===== */
+body.vos-app .pagetitle h1 {
+  color: var(--bv-text) !important;
+  font-size: 1.85rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em;
+}
+
+body.vos-app .card-title {
+  padding: 0 0 0.85rem !important;
+  margin-bottom: 1rem !important;
+  border-bottom: 1px solid var(--bv-border);
+  font-family: Inter, "Segoe UI", sans-serif !important;
+}
+
+body.vos-app .dashboard .info-card h6,
+body.vos-app .info-card h6 {
+  color: var(--bv-text) !important;
+}
+
+body.vos-app .dashboard .revenue-card .card-icon,
+body.vos-app .dashboard .sales-card .card-icon,
+body.vos-app .dashboard .customers-card .card-icon {
+  background: #eff6ff !important;
+  color: var(--bv-blue) !important;
+  border-radius: 14px !important;
+  width: 48px !important;
+  height: 48px !important;
+  font-size: 1.25rem;
+}
+
+body.vos-app form .row.g-3 {
+  max-width: 100% !important;
+}
+
+body.vos-app .table-striped > tbody > tr:nth-of-type(odd) > * {
+  --bs-table-accent-bg: #f8fafc;
+  color: var(--bv-text);
+}
+
+body.vos-app .table-bordered,
+body.vos-app .table-bordered > :not(caption) > * > * {
+  border-color: var(--bv-border) !important;
+}
+
+body.vos-app .dataTables_wrapper .dataTables_filter input,
+body.vos-app .dataTables_wrapper .dataTables_length select {
+  border-radius: 10px;
+  border: 1px solid #dbe3ee;
+  padding: 0.35rem 0.6rem;
+}
+
+body.vos-app .dataTables_wrapper {
+  color: var(--bv-muted);
+}
+
+body.vos-app .btn-secondary {
+  background: #fff;
+  color: var(--bv-text);
+  border: 1px solid var(--bv-border);
+  border-radius: 10px;
+}
+
+body.vos-app .btn-secondary:hover {
+  background: #f8fafc;
+  color: var(--bv-text);
+  border-color: #cbd5e1;
+}
+
+body.vos-app .profile .profile-card h2,
+body.vos-app .profile .profile-overview .card-title,
+body.vos-app .profile .profile-overview .label {
+  color: var(--bv-text) !important;
+}
+
+body.vos-app .section {
+  background: transparent;
+}
+
+body.vos-app .breadcrumb {
+  background: transparent;
+  padding: 0;
 }
