@@ -173,9 +173,13 @@
                 </div>
             </div>
             <div class="col-lg-4">
-                <div class="bv-panel">
+                <div class="bv-panel mb-3">
                     <h5 class="card-title">Consumo por código de área <span>| Hoy</span></h5>
-                    <div id="trafficChart" style="min-height: 240px;"></div>
+                    <div id="trafficChart" style="min-height: 220px;"></div>
+                </div>
+                <div class="bv-panel">
+                    <h5 class="card-title">Motivo de cuelgue <span>| Hoy</span></h5>
+                    <div id="hangupChart" style="min-height: 220px;"></div>
                 </div>
             </div>
             <div class="col-lg-6">
@@ -228,6 +232,7 @@
             var fechasArray = <?php echo $fechas; ?>;
             var data = <?php echo $feemes; ?>;
             var areaData = <?php echo $ConsumAreaCode; ?>;
+            var hangupData = <?php echo isset($motivoCuelgueJson) ? $motivoCuelgueJson : '[]'; ?>;
 
             document.addEventListener("DOMContentLoaded", () => {
                 new ApexCharts(document.querySelector("#reportsChart"), {
@@ -255,6 +260,20 @@
                         itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
                         label: { show: false },
                         data: areaData.length ? areaData : [{ name: 'Sin datos', value: 0 }]
+                    }]
+                });
+
+                echarts.init(document.querySelector("#hangupChart")).setOption({
+                    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+                    legend: { bottom: 0 },
+                    color: ['#2563eb', '#f97316', '#22c55e', '#ef4444', '#a855f7', '#14b8a6'],
+                    series: [{
+                        name: 'Motivo',
+                        type: 'pie',
+                        radius: ['48%', '72%'],
+                        itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
+                        label: { show: false },
+                        data: hangupData.length ? hangupData : [{ name: 'Sin datos', value: 0 }]
                     }]
                 });
             });

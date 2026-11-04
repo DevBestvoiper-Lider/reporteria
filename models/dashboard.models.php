@@ -284,7 +284,7 @@
 
             if ($item != null) {
                 try {
-                    $stmt = Conexion::conectar()->prepare("SELECT callergatewayid, callerip, holdtime, fee, callerareacode FROM $tabla WHERE $item = :$item LIMIT 100");
+                    $stmt = Conexion::conectar()->prepare("SELECT callergatewayid, callerip, holdtime, fee, callerareacode, endreason FROM $tabla WHERE $item = :$item LIMIT 100");
                     $stmt -> bindParam(":".$item , $valor, PDO::PARAM_STR);
                     $stmt -> execute();
 

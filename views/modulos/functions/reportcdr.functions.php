@@ -70,3 +70,20 @@ if (isset($reportcdr) && is_array($reportcdr) && !empty($reportcdr)) {
         );
     }
 }
+
+$motivoCuelgue = array();
+if (isset($dataArray) && is_array($dataArray)) {
+    foreach ($dataArray as $row) {
+        $motivo = isset($row['endreason']) && $row['endreason'] !== '' ? $row['endreason'] : 'N/A';
+        if (!isset($motivoCuelgue[$motivo])) {
+            $motivoCuelgue[$motivo] = 0;
+        }
+        $motivoCuelgue[$motivo]++;
+    }
+}
+arsort($motivoCuelgue);
+$motivoChart = array();
+foreach ($motivoCuelgue as $name => $value) {
+    $motivoChart[] = array('name' => (string) $name, 'value' => (int) $value);
+}
+$motivoCuelgueJson = json_encode($motivoChart);

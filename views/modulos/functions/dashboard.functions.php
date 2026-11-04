@@ -167,18 +167,41 @@ foreach ($tuArray as $subarray) {
 $dashboard = ControllersDashboard::ctrMostrarLlamadasCdrMes($item, $valor);
 // print_r ($dashboard);
 
-$tuArray = $dashboard;
+$tuArray = is_array($dashboard) ? $dashboard : array();
 
 $dataArray = array();
 
+$endReasonsCatalog = ControllersReportCdr::ctrMostrarEndReason(null, null);
+
 foreach ($tuArray as $fecha => $registros) {
     foreach ($registros as $registro) {
+        $endreasonLabel = 'N/A';
+        if (isset($registro['endreason']) && is_array($endReasonsCatalog)) {
+            foreach ($endReasonsCatalog as $subarray2) {
+                if (is_array($subarray2) && isset($subarray2['code']) && $subarray2['code'] == $registro['endreason']) {
+                    if (isset($subarray2['description'])) {
+                        if ($subarray2['description'] == 'Caller Hangup') {
+                            $endreasonLabel = 'Empresa';
+                        } elseif ($subarray2['description'] == 'Callee Hangup') {
+                            $endreasonLabel = 'Cliente';
+                        } else {
+                            $endreasonLabel = $subarray2['description'];
+                        }
+                    }
+                    break;
+                }
+            }
+            if ($endreasonLabel === 'N/A') {
+                $endreasonLabel = 'Server';
+            }
+        }
         $dataArray[] = array(
             'callerip' => $registro['callerip'],
             'callergatewayid' => $registro['callergatewayid'],
             'holdtime' => $registro['holdtime'],
             'fee' => $registro['fee'],
             'callerareacode' => $registro['callerareacode'],
+            'endreason' => $endreasonLabel,
         );
     }
 }
@@ -288,6 +311,21 @@ foreach ($consumoPorArea as $name => $value) {
 }
 
 $ConsumAreaCode = json_encode($ConsumAreaChart);
+
+$motivoCuelgue = array();
+foreach ($dataArray as $row) {
+    $motivo = isset($row['endreason']) && $row['endreason'] !== '' ? $row['endreason'] : 'N/A';
+    if (!isset($motivoCuelgue[$motivo])) {
+        $motivoCuelgue[$motivo] = 0;
+    }
+    $motivoCuelgue[$motivo]++;
+}
+arsort($motivoCuelgue);
+$motivoChart = array();
+foreach ($motivoCuelgue as $name => $value) {
+    $motivoChart[] = array('name' => (string) $name, 'value' => (int) $value);
+}
+$motivoCuelgueJson = json_encode($motivoChart);
 
 $topIps = array();
 foreach ($datosAgrupados as $ip => $gateways) {

@@ -110,6 +110,48 @@ function bvOpOptions($selected) {
             </div>
         </form>
 
+        <?php if (!empty($motivoChart)) { ?>
+        <div class="row g-3 mb-3">
+            <div class="col-lg-5">
+                <div class="bv-panel h-100">
+                    <h5 class="card-title">Motivo de cuelgue</h5>
+                    <div id="hangupChart" style="min-height: 260px;"></div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="bv-panel h-100">
+                    <h5 class="card-title">Distribución</h5>
+                    <table class="table table-borderless align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Motivo</th>
+                                <th>Llamadas</th>
+                                <th>%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            foreach ($motivoCuelgue as $name => $count) {
+                                $pct = $totalCdr > 0 ? round(($count / $totalCdr) * 100, 1) : 0;
+                                echo '<tr>
+                                    <td>' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '</td>
+                                    <td>' . number_format($count, 0, ',', '.') . '</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress flex-grow-1" style="height:6px;background:#eef2f7"><div class="progress-bar" style="width:' . $pct . '%;background:#2563eb"></div></div>
+                                            <span>' . $pct . '%</span>
+                                        </div>
+                                    </td>
+                                </tr>';
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <?php } ?>
+
         <div class="bv-panel" id="datoscontent">
             <h5 class="card-title">Resultados <?php if ($totalCdr > 0) { ?><span>| <?php echo number_format($totalCdr, 0, ',', '.'); ?> registros</span><?php } ?></h5>
             <div class="table-responsive">
@@ -171,6 +213,24 @@ function bvOpOptions($selected) {
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        var hangupEl = document.querySelector('#hangupChart');
+        if (hangupEl) {
+            var hangupData = <?php echo isset($motivoCuelgueJson) ? $motivoCuelgueJson : '[]'; ?>;
+            echarts.init(hangupEl).setOption({
+                tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+                legend: { bottom: 0 },
+                color: ['#2563eb', '#f97316', '#22c55e', '#ef4444', '#a855f7', '#14b8a6'],
+                series: [{
+                    name: 'Motivo',
+                    type: 'pie',
+                    radius: ['48%', '72%'],
+                    itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
+                    label: { show: false },
+                    data: hangupData.length ? hangupData : [{ name: 'Sin datos', value: 0 }]
+                }]
+            });
+        }
+
         const operador1 = document.querySelector('select[name="operador_duracion1"]');
         const operador2 = document.querySelector('select[name="operador_duracion2"]');
         if (operador1) {
