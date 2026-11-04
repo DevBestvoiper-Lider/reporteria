@@ -1,87 +1,84 @@
 <?php
-
 $active = "Administrar Usuarios";
-
+$valor = null;
+$item = null;
+$usuarios = ControllersUsuarios::ctrMostrarUsuarios($item, $valor);
+$totalUsuarios = is_array($usuarios) ? count($usuarios) : 0;
 ?>
 
 <main id="main" class="main">
 
-        <?php include_once 'views/modulos/includes/ruta.php'; ?>
-        <!-- End Page Title -->
+    <div class="bv-page-head">
+        <div>
+            <div class="bv-crumb">Inicio / Usuarios</div>
+            <h1>Usuarios</h1>
+            <p>Cuentas de acceso al portal de reportería.</p>
+        </div>
+        <div class="bv-actions">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarUsuario">
+                <i class="bi bi-plus-lg"></i> Nuevo usuario
+            </button>
+        </div>
+    </div>
 
-        <section class="section">
-            <div class="row">
-                <div class="col-lg-12">
-
-                    <div class="card">
-                        <div class="card-body">
-                          <br>
-
-                            <!-- Table with stripped rows -->
-                            <table id="table" class="table table-bordered table-striped">
-                            <br>
-                            <thead>
-                              <tr>
-                                <th style="width:10px">#</th>
-                                <th>Nombre</th>
-                                <th>Usuario</th>
-                                <th>Account Name</th>
-                                <th>Foto</th>
-                                <th>Perfil</th>
-                                <th>Ultimo login</th>
-                                <th>Acciones</th>
-                              </tr>
-                            </thead>
-                                <tbody>
-                                <?php 
-
-                                  $valor = null;
-                                  $item = null;
-                                  $usuarios = ControllersUsuarios::ctrMostrarUsuarios($item, $valor);
-
-                                  foreach ($usuarios as $key => $value){
-                                    echo '
-                                    <tr>
-                                      <td>'.$value["id"].'</td>
-                                      <td>'.$value["nombre"].'</td>
-                                      <td>'.$value["usuario"].'</td>
-                                      <td>'.$value["customeraccountname"].'</td>'
-                                      ;
-
-                                      if ($value["foto"] != ""){
-                                        echo '<td><img src="'.$value["foto"].'" class="img-thumbnail" width="40px" alt=""></td>';
-                                      }else {
-                                        echo '<td><img src="views/img/users/avatar.png" class="img-thumbnail" width="40px" alt=""></td>';
-                                      }
-                                      
-                                      echo '<td>'.$value["perfil"].'</td>';
-
-                                      echo '<td>'.$value["ultimo_login"].'</td>
-                                      <td>
-
-                                        <div class="btn-group">
-                                            <botton class="btn btn-warning btnEditarUsuario" idUsuario="'.$value["id"].'" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario"><i class="fa fa-pencil"></i></botton>
-                                        </div>
-
-                                      </td>
-                                    
-                                    </tr>';
-                                    
-                                  }
-
-                                ?>
-                                </tbody>
-                            </table>
-                            <!-- End Table with stripped rows -->
-
-                        </div>
-                    </div>
-
+    <section class="section">
+        <div class="bv-kpi-row">
+            <div class="bv-kpi">
+                <div class="bv-kpi-head">
+                    <div class="left"><span class="bv-kpi-ico blue"><i class="bi bi-people"></i></span> Usuarios</div>
                 </div>
+                <div class="bv-kpi-value"><?php echo (int) $totalUsuarios; ?></div>
+                <div class="bv-kpi-sub">Registrados en el sistema</div>
             </div>
-        </section>
+        </div>
 
-    </main>
+        <div class="bv-panel">
+            <h5 class="card-title mb-0 border-0">Listado de usuarios</h5>
+            <div class="table-responsive mt-2">
+                <table id="table" class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width:10px">#</th>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Account Name</th>
+                            <th>Foto</th>
+                            <th>Perfil</th>
+                            <th>Último login</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if (is_array($usuarios)) {
+                            foreach ($usuarios as $value) {
+                                echo '<tr>
+                                  <td>' . htmlspecialchars($value['id'], ENT_QUOTES, 'UTF-8') . '</td>
+                                  <td>' . htmlspecialchars($value['nombre'], ENT_QUOTES, 'UTF-8') . '</td>
+                                  <td>' . htmlspecialchars($value['usuario'], ENT_QUOTES, 'UTF-8') . '</td>
+                                  <td>' . htmlspecialchars($value['customeraccountname'], ENT_QUOTES, 'UTF-8') . '</td>';
+
+                                if ($value['foto'] != '') {
+                                    echo '<td><img src="' . htmlspecialchars($value['foto'], ENT_QUOTES, 'UTF-8') . '" class="rounded" width="40" alt=""></td>';
+                                } else {
+                                    echo '<td><img src="views/img/users/avatar.png" class="rounded" width="40" alt=""></td>';
+                                }
+
+                                echo '<td>' . htmlspecialchars($value['perfil'], ENT_QUOTES, 'UTF-8') . '</td>
+                                  <td>' . htmlspecialchars($value['ultimo_login'], ENT_QUOTES, 'UTF-8') . '</td>
+                                  <td>
+                                    <button class="btn btn-warning btn-sm btnEditarUsuario" idUsuario="' . htmlspecialchars($value['id'], ENT_QUOTES, 'UTF-8') . '" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario"><i class="fa fa-pencil"></i></button>
+                                  </td>
+                                </tr>';
+                            }
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
 
 
 <!-- MODAL CREAR USUARIO -->

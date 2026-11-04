@@ -138,12 +138,36 @@ foreach ($datosAgrupados as $ip => $gateways) {
         $sum_holdtime += $data['sum_holdtime'];
         $sum_fee += $data['sum_fee'];
 
-        $feeconsum[] = $data['sum_fee'];
+        $feeconsum[] = abs($data['sum_fee']);
         $ipgateway[] = $gateway;
         $feetimes[] = $data['sum_holdtime'];
     }
         
 }
+
+$minutosTotales = $sum_holdtime / 60;
+$servidoresTrafico = count(array_unique($ipgateway));
+$consumototal = abs($sum_fee);
+$costoPromedioMin = $minutosTotales > 0 ? ($consumototal / $minutosTotales) : 0;
+$saldoNegativo = ((float) $saldoactual) < 0;
+$saldoMostrar = ($saldoNegativo ? '-' : '') . '$' . number_format(abs((float) $saldoactual), 0, ',', '.');
+$consumoMostrar = '$' . number_format($consumototal, 0, ',', '.');
+$costoMostrar = '$' . number_format($costoPromedioMin, 0, ',', '.');
+$minutosMostrar = number_format($minutosTotales, 0, ',', '.');
+
+$palette = array('#2563eb', '#22c55e', '#38bdf8', '#fb923c', '#8b5cf6', '#14b8a6', '#f43f5e', '#84cc16');
+$legendServidores = array();
+for ($i = 0; $i < count($ipgateway); $i++) {
+    $feeAbs = abs($feeconsum[$i]);
+    $pct = $consumototal > 0 ? round(($feeAbs / $consumototal) * 100) : 0;
+    $legendServidores[] = array(
+        'name' => $ipgateway[$i],
+        'fee' => $feeAbs,
+        'pct' => $pct,
+        'color' => $palette[$i % count($palette)],
+    );
+}
+$paletteJson = json_encode($palette);
 
 $horas = floor($sum_holdtime / 3600); // Calcula las horas completas
 $sum_holdtime %= 3600; // Obtiene los segundos restantes

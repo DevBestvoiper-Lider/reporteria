@@ -616,7 +616,9 @@ body.vos-app .footer {
 .bv-kpi-ico.blue { background: #eff6ff; color: #2563eb; }
 .bv-kpi-ico.green { background: #ecfdf3; color: #16a34a; }
 .bv-kpi-ico.purple { background: #f3e8ff; color: #9333ea; }
-.bv-kpi-ico.orange { background: #fff7ed; color: #ea580c; }
+.bv-kpi-ico.orange { background: #fff1e8; color: #ea580c; }
+.bv-kpi-ico.yellow { background: #fff7ed; color: #d97706; }
+.bv-kpi-ico.peach { background: #ffedd5; color: #ea580c; }
 
 .bv-delta {
   font-size: 0.75rem;
@@ -685,6 +687,12 @@ body.vos-app .card-title {
   margin-bottom: 1rem !important;
   border-bottom: 1px solid var(--bv-border);
   font-family: Inter, "Segoe UI", sans-serif !important;
+}
+
+body.vos-app .card-title.border-0 {
+  border-bottom: 0 !important;
+  margin-bottom: 0.35rem !important;
+  padding-bottom: 0 !important;
 }
 
 body.vos-app .dashboard .info-card h6,
@@ -808,4 +816,199 @@ body.vos-app table.dataTable thead th {
 body.vos-app table.dataTable tbody td {
   font-size: 0.88rem;
   vertical-align: middle;
+}
+
+.bv-type-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.bv-type-pills label {
+  margin: 0;
+  cursor: pointer;
+}
+
+.bv-type-pills input {
+  display: none;
+}
+
+.bv-type-pills span {
+  display: inline-block;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--bv-border);
+  background: #fff;
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.bv-type-pills input:checked + span {
+  background: var(--bv-blue);
+  border-color: var(--bv-blue);
+  color: #fff;
+}
+
+.bv-date-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.bv-date-nav button {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--bv-border);
+  background: #fff;
+  color: var(--bv-text);
+}
+
+.bv-kpi-value.neg {
+  color: #dc2626;
+}
+
+.bv-kpi-value.pos-blue {
+  color: #2563eb;
+}
+
+.bv-donut-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .bv-donut-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bv-legend-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0;
+  font-size: 0.88rem;
+  border-bottom: 1px solid var(--bv-border);
+}
+
+.bv-legend-row:last-child {
+  border-bottom: 0;
+}
+
+.bv-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.45rem;
+}
+
+.bv-profile-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--bv-border);
+}
+
+.bv-profile-row:last-child {
+  border-bottom: 0;
+}
+
+.bv-profile-row .label {
+  color: var(--bv-muted);
+  font-weight: 600;
+}
+
+.bv-filter-split {
+  display: grid;
+  grid-template-columns: minmax(240px, 280px) 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .bv-filter-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bv-filter-split .bv-filter-label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--bv-muted);
+  font-weight: 600;
+  margin-bottom: 0.45rem;
+}
+
+.bv-date-nav .form-control {
+  min-width: 170px;
+}
+
+.bv-legend-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  white-space: nowrap;
+  color: var(--bv-muted);
+}
+
+.bv-legend-meta strong {
+  color: var(--bv-text);
+  font-weight: 700;
+}
+
+.bv-legend-name {
+  color: #334155;
+  font-weight: 600;
+}
+
+.bv-chart-sub {
+  color: var(--bv-muted);
+  font-size: 0.82rem;
+  margin: -0.6rem 0 1rem;
+}
+
+.bv-login-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.bv-login-card {
+  width: min(420px, 100%);
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: var(--bv-shadow);
+  border: 1px solid var(--bv-border);
+  padding: 2rem 1.6rem 1.4rem;
+}
+
+.bv-login-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+}
+
+.bv-login-logo img {
+  max-height: 42px;
+}
+
+body.vos-app .modal-content {
+  border-radius: 16px;
+  border: 1px solid var(--bv-border);
+}
+
+body.vos-app .modal-header {
+  border-bottom-color: var(--bv-border);
+}
+
+body.vos-app .modal-footer {
+  border-top-color: var(--bv-border);
 }
