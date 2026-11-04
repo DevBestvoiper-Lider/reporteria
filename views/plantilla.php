@@ -50,8 +50,8 @@ ini_set('max_execution_time', 0); // sin límite de tiempo
 
   <!-- Theme style -->
   <link rel="stylesheet" href="views/dist/css/style.css">
-  <link rel="stylesheet" href="views/css/bv-theme.css?v=3">
-  <link rel="stylesheet" href="views/dist/css/vos-theme.css?v=3">
+  <link rel="stylesheet" href="views/css/bv-theme.css?v=4">
+  <link rel="stylesheet" href="views/dist/css/vos-theme.css?v=4">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">

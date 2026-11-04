@@ -9,7 +9,10 @@ if ($vosIniciales === '') {
 
 <header id="header" class="header fixed-top d-flex align-items-center">
 
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center gap-2">
+        <a href="dashboard" class="logo d-flex align-items-center d-xl-none">
+            <img src="views/img/logos/logo.png" alt="BestVoiper">
+        </a>
         <i class="bi bi-list toggle-sidebar-btn d-xl-none"></i>
     </div>
 

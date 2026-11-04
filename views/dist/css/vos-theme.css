@@ -188,45 +188,27 @@ body.vos-app .sidebar {
 
 body.vos-app .bv-brand {
   display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.2rem 0.4rem 1.1rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.15rem 0.35rem 1.1rem;
+  text-decoration: none;
 }
 
-body.vos-app .bv-logo-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #1d4ed8, #0ea5e9);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  position: relative;
-}
-
-body.vos-app .bv-logo-mark::after {
-  content: "";
-  width: 8px;
-  height: 8px;
-  background: #22c55e;
-  border-radius: 50%;
-  position: absolute;
-  left: 4px;
-  bottom: 4px;
-  border: 2px solid #fff;
-}
-
-body.vos-app .bv-brand strong {
+body.vos-app .bv-logo-img {
   display: block;
-  font-size: 0.92rem;
-  letter-spacing: -0.02em;
-  color: #111827;
+  width: 100%;
+  max-width: 196px;
+  height: auto;
+  max-height: 48px;
+  object-fit: contain;
+  object-position: left center;
 }
 
-body.vos-app .bv-brand strong span {
-  color: #16a34a;
+body.vos-app .header .logo img {
+  max-height: 40px;
+  width: auto;
+  margin-right: 0.35rem;
 }
 
 body.vos-app .bv-brand small {
@@ -997,7 +979,8 @@ body.vos-app table.dataTable tbody td {
 }
 
 .bv-login-logo img {
-  max-height: 42px;
+  max-height: 56px;
+  width: auto;
 }
 
 body.vos-app .modal-content {

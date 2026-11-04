@@ -11,13 +11,10 @@ function vosNavActive($rutas, $actual) {
 
 <aside id="sidebar" class="sidebar">
 
-    <div class="bv-brand">
-        <div class="bv-logo-mark"><i class="bi bi-globe2"></i></div>
-        <div>
-            <strong>BEST<span>VOIPER</span></strong>
-            <small>Reportería de clientes</small>
-        </div>
-    </div>
+    <a href="dashboard" class="bv-brand">
+        <img src="views/img/logos/logo.png" alt="BestVoiper" class="bv-logo-img">
+        <small>Reportería de clientes</small>
+    </a>
 
     <ul class="sidebar-nav" id="sidebar-nav">
         <li class="nav-item">
