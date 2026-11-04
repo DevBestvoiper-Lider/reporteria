@@ -133,6 +133,8 @@ class ModeloReportCdr
                         $conditions[] = "(" . $condiciones_duracion[0] . " $operador_logico " . $condiciones_duracion[1] . ")";
                     }
 
+                    self::appendHourConditions($conditions, $params);
+
                     // Validar item y valor para prevenir inyección SQL
                     if (!preg_match('/^[a-zA-Z0-9_]+$/', $item)) {
                         return array();
@@ -219,6 +221,62 @@ class ModeloReportCdr
             return array();
         }
     }
+    static public function appendHourConditions(&$conditions, &$params)
+    {
+        $horaIni = isset($_POST['horainicio']) ? trim($_POST['horainicio']) : '';
+        $horaFin = isset($_POST['horafin']) ? trim($_POST['horafin']) : '';
+
+        if ($horaIni !== '' && !preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/', $horaIni)) {
+            $horaIni = '';
+        }
+        if ($horaFin !== '' && !preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/', $horaFin)) {
+            $horaFin = '';
+        }
+
+        if ($horaIni === '' && $horaFin === '') {
+            return;
+        }
+
+        if (strlen($horaIni) === 5) {
+            $horaIni .= ':00';
+        }
+        if (strlen($horaFin) === 5) {
+            $horaFin .= ':59';
+        }
+
+        $iniSec = self::timeToSeconds($horaIni);
+        $finSec = self::timeToSeconds($horaFin);
+        // Hora mostrada en Bogotá (UTC-5), igual que date() del reporte
+        $expr = '((FLOOR(starttime / 1000) - 18000) % 86400 + 86400) % 86400';
+
+        if ($horaIni !== '' && $horaFin !== '') {
+            if ($iniSec <= $finSec) {
+                $conditions[] = "$expr BETWEEN ? AND ?";
+                $params[] = $iniSec;
+                $params[] = $finSec;
+            } else {
+                $conditions[] = "($expr >= ? OR $expr <= ?)";
+                $params[] = $iniSec;
+                $params[] = $finSec;
+            }
+        } elseif ($horaIni !== '') {
+            $conditions[] = "$expr >= ?";
+            $params[] = $iniSec;
+        } else {
+            $conditions[] = "$expr <= ?";
+            $params[] = $finSec;
+        }
+    }
+
+    static public function timeToSeconds($time)
+    {
+        $parts = explode(':', $time);
+        $h = isset($parts[0]) ? (int) $parts[0] : 0;
+        $m = isset($parts[1]) ? (int) $parts[1] : 0;
+        $s = isset($parts[2]) ? (int) $parts[2] : 0;
+        return ($h * 3600) + ($m * 60) + $s;
+    }
+
     static public function MdlMostrarEndReason($tabla, $item, $valor)
     {
         if ($item != null) {

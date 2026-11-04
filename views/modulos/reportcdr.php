@@ -4,6 +4,8 @@ include_once 'functions/reportcdr.functions.php';
 
 $fechaInicio = isset($_POST['fechainicio']) ? $_POST['fechainicio'] : date('Y-m-d');
 $fechaFin = isset($_POST['fechafin']) ? $_POST['fechafin'] : date('Y-m-d');
+$horaInicio = isset($_POST['horainicio']) ? $_POST['horainicio'] : '';
+$horaFin = isset($_POST['horafin']) ? $_POST['horafin'] : '';
 $caller = isset($_POST['caller']) ? $_POST['caller'] : '';
 $callee = isset($_POST['callee']) ? $_POST['callee'] : '';
 $callerSolic = isset($_POST['callerSolic']) ? $_POST['callerSolic'] : '';
@@ -42,10 +44,14 @@ function bvOpOptions($selected) {
         <div>
             <div class="bv-crumb">Inicio / CDR</div>
             <h1>CDR Reportes</h1>
-            <p>Consulta llamadas por fecha, número y duración.</p>
+            <p>Consulta llamadas por fecha, hora, número y duración.</p>
         </div>
         <div class="bv-actions">
-            <span class="bv-date-pill"><i class="bi bi-calendar3"></i> <?php echo htmlspecialchars($fechaInicio, ENT_QUOTES, 'UTF-8'); ?> – <?php echo htmlspecialchars($fechaFin, ENT_QUOTES, 'UTF-8'); ?></span>
+            <span class="bv-date-pill"><i class="bi bi-calendar3"></i> <?php echo htmlspecialchars($fechaInicio, ENT_QUOTES, 'UTF-8'); ?> – <?php echo htmlspecialchars($fechaFin, ENT_QUOTES, 'UTF-8'); ?><?php
+                if ($horaInicio !== '' || $horaFin !== '') {
+                    echo ' · ' . htmlspecialchars($horaInicio !== '' ? $horaInicio : '00:00', ENT_QUOTES, 'UTF-8') . ' – ' . htmlspecialchars($horaFin !== '' ? $horaFin : '23:59', ENT_QUOTES, 'UTF-8');
+                }
+            ?></span>
         </div>
     </div>
 
@@ -60,8 +66,16 @@ function bvOpOptions($selected) {
                     <input type="date" name="fechainicio" value="<?php echo htmlspecialchars($fechaInicio, ENT_QUOTES, 'UTF-8'); ?>" class="form-control">
                 </div>
                 <div class="col-md-3">
+                    <label class="form-label">Hora inicio</label>
+                    <input type="time" name="horainicio" step="60" value="<?php echo htmlspecialchars($horaInicio, ENT_QUOTES, 'UTF-8'); ?>" class="form-control">
+                </div>
+                <div class="col-md-3">
                     <label class="form-label">Fecha fin</label>
                     <input type="date" name="fechafin" value="<?php echo htmlspecialchars($fechaFin, ENT_QUOTES, 'UTF-8'); ?>" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Hora fin</label>
+                    <input type="time" name="horafin" step="60" value="<?php echo htmlspecialchars($horaFin, ENT_QUOTES, 'UTF-8'); ?>" class="form-control">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Número mostrado</label>

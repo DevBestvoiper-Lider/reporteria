@@ -133,6 +133,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion']) && $_POST['a
             $conditions[] = "(" . $condiciones_duracion[0] . " $operador_logico " . $condiciones_duracion[1] . ")";
         }
 
+        ModeloReportCdr::appendHourConditions($conditions, $params);
+
         $conditions[] = "$item = ?";
         $params[] = $valor;
 
